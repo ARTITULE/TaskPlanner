@@ -2,14 +2,69 @@ from PyQt5.QtWidgets import (
     QMainWindow,
     QWidget,
     QVBoxLayout,
-    QLineEdit,
+    QHBoxLayout,
+    QStackedWidget,
+    QLabel,
     QPushButton,
-    QListWidget,
-    QListWidgetItem
-)
-from PyQt5.QtCore import Qt
+    QLineEdit,
+    QScrollArea,
+    QSplitter,
+    QCheckBox,
+    QMenu,
 
-from task_planner.controllers.task_manager import TaskManager
+)
+from PyQt5.QtCore import Qt, pyqtSignal
+from task_planner.ui.add_task_window import AddTaskWindow
+
+
+
+class TaskWidget(QWidget):
+
+    request_delete = pyqtSignal(QWidget)
+
+    def __init__(self, text: str, parent=None):
+        super().__init__(parent)
+
+        self.checkbox = QCheckBox()
+        self.label = QLabel(text)
+        self.label.setWordWrap(True)
+
+
+        self.menu_button = QPushButton("⋮")
+        self.menu_button.setFixedWidth(64)
+        self.menu_button.setFlat(True)
+
+
+        layout = QHBoxLayout(self)
+        layout.setContentsMargins(6, 2, 6, 2)
+        layout.addWidget(self.checkbox)
+        layout.addWidget(self.label)
+        layout.addStretch()
+        layout.addWidget(self.menu_button)
+
+        self.checkbox.stateChanged.connect(self.update_style)
+        self.menu_button.clicked.connect(self.show_menu)
+
+    def update_style(self):
+        if self.checkbox.isChecked():
+            self.label.setStyleSheet(
+                "color: gray; text-decoration: line-through;"
+            )
+        else:
+            self.label.setStyleSheet("")
+
+    def show_menu(self):
+        menu = QMenu(self)
+        delete_action = menu.addAction("Delete")
+
+        action = menu.exec_(
+            self.menu_button.mapToGlobal(
+                self.menu_button.rect().bottomLeft()
+            )
+        )
+
+        if action == delete_action:
+            self.request_delete.emit(self)
 
 
 class MainWindow(QMainWindow):
@@ -17,74 +72,99 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.setWindowTitle("Task Planner")
-        self.resize(400, 400)
+        self.resize(1000, 600)
 
-        self.task_manager = TaskManager()
+        
+        self.stack = QStackedWidget()
+        self.setCentralWidget(self.stack)
+        
 
-        # Widgets
+        self.home_page = self.init_ui()
+        
+        
+        self.add_task_page = AddTaskWindow()
+        
+        
+        self.stack.addWidget(self.home_page)     
+        self.stack.addWidget(self.add_task_page) 
+        
+        
+        self.add_task_page.task_submitted.connect(self.add_task_to_list)
+        self.add_task_page.save_btn.clicked.connect(self.go_to_home)
+        
+        
+        
+
+    def init_ui(self):
+        
+        self.today_btn = QPushButton("Today")
+        self.calendar_btn = QPushButton("Calendar")
+        self.groups_btn = QPushButton("Groups")
+
         self.task_input = QLineEdit()
         self.task_input.setPlaceholderText("Enter a task")
 
-        self.add_button = QPushButton("Add task")
-        self.delete_button = QPushButton("Delete selected")
+        self.add_button = QPushButton("+")
+        self.add_button.setFixedWidth(32)
 
-        self.task_list = QListWidget()
+        self.task_container = QWidget()
+        self.task_layout = QVBoxLayout(self.task_container)
+        self.task_layout.setContentsMargins(0, 0, 0, 0)
+        self.task_layout.setSpacing(4)
+        self.task_layout.addStretch() 
 
-        # Layout
-        layout = QVBoxLayout()
-        layout.addWidget(self.task_input)
-        layout.addWidget(self.add_button)
-        layout.addWidget(self.task_list)
-        layout.addWidget(self.delete_button)
+        
+        self.add_button.clicked.connect(lambda: self.stack.setCurrentIndex(1))
 
-        container = QWidget()
-        container.setLayout(layout)
-        self.setCentralWidget(container)
 
-        self.setStyleSheet("""
+        
+        sidebar_layout = QVBoxLayout()
+        sidebar_layout.addWidget(QLabel("Navigation"))
+        sidebar_layout.addWidget(self.today_btn)
+        sidebar_layout.addWidget(self.calendar_btn)
+        sidebar_layout.addWidget(self.groups_btn)
+        sidebar_layout.addStretch()
 
-            QPushButton#add_button{
-                font-family : arial;
-                font-size : 40px
-            }
-            QLineEdit{
-                min-height: 50px;
-                font-size : 30px
-            }
-            QListWidget{
-                font-size : 20px
-            }
+        sidebar_widget = QWidget()
+        sidebar_widget.setLayout(sidebar_layout)
 
-        """)
+        input_layout = QHBoxLayout()
+        input_layout.addWidget(self.task_input)
+        input_layout.addWidget(self.add_button)
 
-        # Signals
-        self.add_button.clicked.connect(self.add_task)
-        self.delete_button.clicked.connect(self.delete_task)
-        self.task_list.itemChanged.connect(self.on_item_changed)
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setWidget(self.task_container)
+        scroll.setFrameShape(QScrollArea.NoFrame)
 
-    def add_task(self):
-        title = self.task_input.text().strip()
-        if not title:
-            return
+        app_layout = QVBoxLayout()
+        app_layout.addWidget(QLabel("Tasks for Today"))
+        app_layout.addLayout(input_layout)
+        app_layout.addWidget(scroll)
 
-        task = self.task_manager.add_task(title)
+        main_widget = QWidget()
+        main_widget.setLayout(app_layout)
 
-        item = QListWidgetItem(task.title)
-        item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
-        item.setCheckState(Qt.Unchecked)
+        
+        splitter = QSplitter(Qt.Horizontal)
+        splitter.addWidget(sidebar_widget)
+        splitter.addWidget(main_widget)
+        splitter.setSizes([220, 780])
 
-        self.task_list.addItem(item)
-        self.task_input.clear()
+        
+        return splitter
 
-    def delete_task(self):
-        row = self.task_list.currentRow()
-        if row < 0:
-            return
+    def add_task_to_list(self, text):
 
-        self.task_manager.delete_task(row)
-        self.task_list.takeItem(row)
+        new_task = TaskWidget(text)
+        new_task.request_delete.connect(self.remove_task)
+        self.task_layout.insertWidget(self.task_layout.count() - 1, new_task)
+        
 
-    def on_item_changed(self, item: QListWidgetItem):
-        row = self.task_list.row(item)
-        completed = item.checkState() == Qt.Checked
-        self.task_manager.set_completed(row, completed)
+    def remove_task(self, task: QWidget):
+        task.setParent(None)
+        task.deleteLater()
+
+
+    def go_to_home(self):
+        self.stack.setCurrentIndex(0)
