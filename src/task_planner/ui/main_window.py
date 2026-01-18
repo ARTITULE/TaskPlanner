@@ -16,6 +16,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, pyqtSignal
 from task_planner.ui.add_task_window import AddTaskWindow
 from task_planner.models.task import TaskWidget
+from task_planner.controllers.task_manager import TaskManager
 
 
 
@@ -28,24 +29,18 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Task Planner")
         self.resize(1000, 600)
 
-        
         self.stack = QStackedWidget()
         self.setCentralWidget(self.stack)
         
-
-        self.home_page = self.init_ui()
-        
-        
+        self.home_page = self.init_ui()   
         self.add_task_page = AddTaskWindow()
-        
-        
+         
         self.stack.addWidget(self.home_page)     
         self.stack.addWidget(self.add_task_page) 
-        
-        
+           
         self.add_task_page.task_submitted.connect(self.add_task_to_list)
         
-        
+        self.task_manager = TaskManager()
         
 
     def init_ui(self):
@@ -109,10 +104,12 @@ class MainWindow(QMainWindow):
 
     def add_task_to_list(self, title, description):
 
-        new_task = TaskWidget(title= title,description= description)
+        task = self.task_manager.add_task(title= title, description= description)
+        new_task = TaskWidget(task)
         new_task.request_delete.connect(self.remove_task)
         self.task_layout.insertWidget(self.task_layout.count() - 1, new_task)
         self.go_to_home()
+
         
 
     def remove_task(self, task: QWidget):

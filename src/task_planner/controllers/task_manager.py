@@ -1,4 +1,4 @@
-import uuid
+
 from task_planner.models.task import Task
 
 
@@ -6,11 +6,8 @@ class TaskManager:
     def __init__(self):
         self.tasks: list[Task] = []
 
-    def add_task(self, title: str) -> Task:
-        task = Task(
-            id=str(uuid.uuid4()),
-            title=title
-        )
+    def add_task(self, title: str, description: str | None = None) -> Task:
+        task = Task(title= title, description=description)
         self.tasks.append(task)
         return task
 

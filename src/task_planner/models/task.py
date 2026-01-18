@@ -14,25 +14,37 @@ from PyQt5.QtWidgets import (
 
 )
 from PyQt5.QtCore import Qt, pyqtSignal
-from dataclasses import dataclass
-
+import uuid
+from dataclasses import dataclass, field
 
 @dataclass
 class Task:
-    id: str
     title: str
+    description: str | None = None
     completed: bool = False
+    id: str = field(default_factory=lambda: str(uuid.uuid4()))
+
+
 
 class TaskWidget(QWidget):
 
     request_delete = pyqtSignal(QWidget)
 
-    def __init__(self, title: str, description: str, parent=None):
+    def __init__(self, task: Task, parent=None):
         super().__init__(parent)
 
         self.checkbox = QCheckBox()
-        self.task_title = QLabel(title)
-        self.task_description = QLabel(description)
+        self.task = task
+        self.task_id = task.id
+
+        self.task_title = QLabel(task.title)
+        self.task_title.setWordWrap(True)
+
+        if task.description:
+            self.task_description = QLabel(task.description)
+            self.task_description.setWordWrap(True)
+        else:
+            self.task_description = None
         
 
 
@@ -40,11 +52,17 @@ class TaskWidget(QWidget):
         self.menu_button.setFixedWidth(64)
         self.menu_button.setFlat(True)
 
-
         layout = QHBoxLayout(self)
         layout.setContentsMargins(6, 2, 6, 2)
         layout.addWidget(self.checkbox)
-        layout.addWidget(self.task_title)
+
+        text_layout = QVBoxLayout()
+        text_layout.addWidget(self.task_title)
+
+        if self.task.description:
+            text_layout.addWidget(self.task_description)
+        
+        layout.addLayout(text_layout)
         layout.addStretch()
         layout.addWidget(self.menu_button)
 
@@ -52,7 +70,8 @@ class TaskWidget(QWidget):
         self.menu_button.clicked.connect(self.show_menu)
 
     def update_style(self):
-        if self.checkbox.isChecked():
+        self.task.completed = self.checkbox.isChecked()
+        if self.task.completed:
             self.task_title.setStyleSheet(
                 "color: gray; text-decoration: line-through;"
             )
