@@ -15,56 +15,10 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt, pyqtSignal
 from task_planner.ui.add_task_window import AddTaskWindow
+from task_planner.models.task import TaskWidget
 
 
 
-class TaskWidget(QWidget):
-
-    request_delete = pyqtSignal(QWidget)
-
-    def __init__(self, text: str, parent=None):
-        super().__init__(parent)
-
-        self.checkbox = QCheckBox()
-        self.label = QLabel(text)
-        self.label.setWordWrap(True)
-
-
-        self.menu_button = QPushButton("⋮")
-        self.menu_button.setFixedWidth(64)
-        self.menu_button.setFlat(True)
-
-
-        layout = QHBoxLayout(self)
-        layout.setContentsMargins(6, 2, 6, 2)
-        layout.addWidget(self.checkbox)
-        layout.addWidget(self.label)
-        layout.addStretch()
-        layout.addWidget(self.menu_button)
-
-        self.checkbox.stateChanged.connect(self.update_style)
-        self.menu_button.clicked.connect(self.show_menu)
-
-    def update_style(self):
-        if self.checkbox.isChecked():
-            self.label.setStyleSheet(
-                "color: gray; text-decoration: line-through;"
-            )
-        else:
-            self.label.setStyleSheet("")
-
-    def show_menu(self):
-        menu = QMenu(self)
-        delete_action = menu.addAction("Delete")
-
-        action = menu.exec_(
-            self.menu_button.mapToGlobal(
-                self.menu_button.rect().bottomLeft()
-            )
-        )
-
-        if action == delete_action:
-            self.request_delete.emit(self)
 
 
 class MainWindow(QMainWindow):
@@ -90,7 +44,6 @@ class MainWindow(QMainWindow):
         
         
         self.add_task_page.task_submitted.connect(self.add_task_to_list)
-        self.add_task_page.save_btn.clicked.connect(self.go_to_home)
         
         
         
@@ -154,11 +107,12 @@ class MainWindow(QMainWindow):
         
         return splitter
 
-    def add_task_to_list(self, text):
+    def add_task_to_list(self, title, description):
 
-        new_task = TaskWidget(text)
+        new_task = TaskWidget(title= title,description= description)
         new_task.request_delete.connect(self.remove_task)
         self.task_layout.insertWidget(self.task_layout.count() - 1, new_task)
+        self.go_to_home()
         
 
     def remove_task(self, task: QWidget):
