@@ -65,6 +65,7 @@ class MainWindow(QMainWindow):
         self.add_button.clicked.connect(lambda: self.stack.setCurrentIndex(1))
 
 
+
         
         sidebar_layout = QVBoxLayout()
         sidebar_layout.addWidget(QLabel("Navigation"))
@@ -106,15 +107,27 @@ class MainWindow(QMainWindow):
 
         task = self.task_manager.add_task(title= title, description= description)
         new_task = TaskWidget(task)
-        new_task.request_delete.connect(self.remove_task)
+        new_task.request_delete.connect(self.on_task_delete_requested)
+        new_task.completed_changed.connect(self.task_changed)
         self.task_layout.insertWidget(self.task_layout.count() - 1, new_task)
         self.go_to_home()
 
-        
+    def task_changed(self, task_id: str, completed: bool):
+        self.task_manager.set_completed(task_id, completed)
 
-    def remove_task(self, task: QWidget):
-        task.setParent(None)
-        task.deleteLater()
+
+    def on_task_delete_requested(self, task_id: str):
+
+        self.task_manager.delete_task(task_id=task_id)
+
+        for i in range (self.task_layout.count()):
+            item = self.task_layout.itemAt(i)
+            widget = item.widget()
+
+            if isinstance(widget, TaskWidget) and widget.task_id == task_id:
+                widget.setParent(None)
+                widget.deleteLater()
+                break
 
 
     def go_to_home(self):

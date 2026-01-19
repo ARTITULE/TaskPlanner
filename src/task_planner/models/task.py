@@ -19,16 +19,34 @@ from dataclasses import dataclass, field
 
 @dataclass
 class Task:
+    id: str 
     title: str
     description: str | None = None
+    exp_time = None
+    creator_name = None
+    category = None
     completed: bool = False
-    id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    deleted: bool = False
+
+    def to_dict(self) -> dict:
+        return {
+            "uuid": self.id,
+            "title": self.title,
+            "description": self.description,
+            "exp_time": self.exp_time,
+            "creator_name": self.creator_name,
+            "category": self.category,
+            "completed": self.completed,
+            "deleted": self.deleted,
+        }
 
 
 
 class TaskWidget(QWidget):
 
-    request_delete = pyqtSignal(QWidget)
+    request_delete = pyqtSignal(str)
+    completed_changed = pyqtSignal(str, bool)
+
 
     def __init__(self, task: Task, parent=None):
         super().__init__(parent)
@@ -67,6 +85,7 @@ class TaskWidget(QWidget):
         layout.addWidget(self.menu_button)
 
         self.checkbox.stateChanged.connect(self.update_style)
+        self.checkbox.stateChanged.connect(self.emit_completed)
         self.menu_button.clicked.connect(self.show_menu)
 
     def update_style(self):
@@ -77,6 +96,12 @@ class TaskWidget(QWidget):
             )
         else:
             self.task_title.setStyleSheet("")
+
+    def emit_completed(self):
+        self.completed_changed.emit(
+            self.task_id,
+            self.checkbox.isChecked()
+        )
 
     def show_menu(self):
         menu = QMenu(self)
@@ -89,4 +114,4 @@ class TaskWidget(QWidget):
         )
 
         if action == delete_action:
-            self.request_delete.emit(self)
+            self.request_delete.emit(self.task_id)
