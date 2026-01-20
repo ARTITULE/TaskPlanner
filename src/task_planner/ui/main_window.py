@@ -23,8 +23,10 @@ from task_planner.controllers.task_manager import TaskManager
 
 
 class MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, auth_manager):
         super().__init__()
+
+        self.auth_manager = auth_manager
 
         self.setWindowTitle("Task Planner")
         self.resize(1000, 600)
@@ -132,3 +134,6 @@ class MainWindow(QMainWindow):
 
     def go_to_home(self):
         self.stack.setCurrentIndex(0)
+
+    def on_user_logged_in(self, user):
+        self.statusBar().showMessage(f"Logged in as {user.username}")

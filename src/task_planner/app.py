@@ -1,10 +1,11 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QStackedWidget
+from PyQt5.QtWidgets import QApplication, QDialog
 from task_planner.ui.main_window import MainWindow
 
-from task_planner.ui.main_window import MainWindow
+from task_planner.ui.signup_dialog import SignupDialog
+from task_planner.ui.login_dialog import LoginDialog
+
 from task_planner.auth.auth_manager import AuthManager
-from task_planner.ui.login_window import LoginWindow
 
 
 
@@ -12,31 +13,37 @@ def run_app():
 
     app = QApplication(sys.argv)
 
-
-    stack = QStackedWidget()
-
     auth_manager = AuthManager()
 
-    login_window = LoginWindow()
-    
-    main_window = MainWindow()
+    main_window = MainWindow(auth_manager=auth_manager)
+    main_window.show()
 
-    stack.addWidget(login_window)
-    stack.addWidget(main_window)
+    login_dialog = LoginDialog(parent=main_window)
 
-    def handle_login(username: str, password: str):
+    def handle_login(username: str, password:str):
         user = auth_manager.login(username=username, password=password)
         if user:
-            stack.setCurrentWidget(main_window)
+            main_window.on_user_logged_in(user)
+            login_dialog.accept()
+        else:
+            login_dialog.show_error("Invalid credentials")
 
-    login_window.login_requested.connect(handle_login)
+    def open_signup():
+        signup = SignupDialog(parent=main_window)
 
-    stack.resize(1000, 600)
+        signup.exec_()
 
-    
-    stack.show()
+    login_dialog.signup_requested.connect(open_signup)
+
+    login_dialog.login_requested.connect(handle_login)
+
+    login_dialog.exec_()
+
+
+
 
     sys.exit(app.exec_())
+
 
 
 

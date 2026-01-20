@@ -20,6 +20,9 @@ class AuthManager:
 
     def is_authenticated(self) -> bool:
         return self.current_user is not None
+    
+    def get_current_user(self) -> User | None:
+        return self.current_user
 
 
 
