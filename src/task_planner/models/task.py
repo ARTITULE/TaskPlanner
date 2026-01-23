@@ -25,19 +25,19 @@ class Task:
     exp_time = None
     creator_name = None
     category = None
-    completed: bool = False
+    completed: str = "completed"
     deleted: bool = False
 
     def to_dict(self) -> dict:
         return {
-            "uuid": self.id,
+            #"uuid": self.id,
             "title": self.title,
             "description": self.description,
             "exp_time": self.exp_time,
-            "creator_name": self.creator_name,
+            #"creator_name": self.creator_name,
             "category": self.category,
             "completed": self.completed,
-            "deleted": self.deleted,
+            #"deleted": self.deleted,
         }
 
 

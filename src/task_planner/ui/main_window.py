@@ -42,7 +42,7 @@ class MainWindow(QMainWindow):
            
         self.add_task_page.task_submitted.connect(self.add_task_to_list)
         
-        self.task_manager = TaskManager()
+        self.task_manager = TaskManager(auth_manager=auth_manager)
         
 
     def init_ui(self):

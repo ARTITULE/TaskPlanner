@@ -1,12 +1,13 @@
 import uuid
 from task_planner.models.task import Task
 from task_planner.services.task_service import TaskService
+from task_planner.auth.auth_manager import AuthManager
 
 
 class TaskManager:
-    def __init__(self):
+    def __init__(self, auth_manager: AuthManager):
         self.tasks: list[Task] = []
-        self.service = TaskService()
+        self.service = TaskService(auth_manager=auth_manager)
 
     def add_task(self, title: str, description: str | None = None) -> Task:
         task = Task(

@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import (
     QSplitter,
     QCheckBox,
     QMenu,
+    QMessageBox,
 )
 from PyQt5.QtCore import pyqtSignal
 
@@ -62,6 +63,12 @@ class LoginDialog(QDialog):
             self.password_input.text()
         )
 
+    def show_error(title: str, message: str):
+        QMessageBox.critical(
+            title,
+            message,
+            QMessageBox.Ok
+        )
 
     
 
