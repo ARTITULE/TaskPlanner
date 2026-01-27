@@ -17,6 +17,8 @@ from PyQt5.QtCore import Qt, pyqtSignal
 from task_planner.ui.add_task_window import AddTaskWindow
 from task_planner.models.task import TaskWidget
 from task_planner.controllers.task_manager import TaskManager
+from task_planner.ui.user_window import UserWindow
+
 
 
 
@@ -36,13 +38,19 @@ class MainWindow(QMainWindow):
         
         self.home_page = self.init_ui()   
         self.add_task_page = AddTaskWindow()
+        self.user_page = UserWindow(auth_manager=auth_manager)
          
         self.stack.addWidget(self.home_page)     
-        self.stack.addWidget(self.add_task_page) 
+        self.stack.addWidget(self.add_task_page)
+        self.stack.addWidget(self.user_page)
            
         self.add_task_page.task_submitted.connect(self.add_task_to_list)
         
         self.task_manager = TaskManager(auth_manager=auth_manager)
+
+        self.statusBar()
+        self.update_status_bar()
+
         
 
     def init_ui(self):
@@ -50,6 +58,9 @@ class MainWindow(QMainWindow):
         self.today_btn = QPushButton("Today")
         self.calendar_btn = QPushButton("Calendar")
         self.groups_btn = QPushButton("Groups")
+
+        self.settings_btn = QPushButton("Settings")
+        self.user_btn = QPushButton("User")
 
         self.task_input = QLineEdit()
         self.task_input.setPlaceholderText("Enter a task")
@@ -65,6 +76,8 @@ class MainWindow(QMainWindow):
 
         
         self.add_button.clicked.connect(lambda: self.stack.setCurrentIndex(1))
+        self.user_btn.clicked.connect(lambda: self.stack.setCurrentWidget(self.user_page))
+
 
 
 
@@ -75,6 +88,13 @@ class MainWindow(QMainWindow):
         sidebar_layout.addWidget(self.calendar_btn)
         sidebar_layout.addWidget(self.groups_btn)
         sidebar_layout.addStretch()
+
+        settings_btn_layout = QHBoxLayout()
+        settings_btn_layout.addWidget(self.settings_btn)
+        settings_btn_layout.addWidget(self.user_btn)
+
+        sidebar_layout.addLayout(settings_btn_layout)
+
 
         sidebar_widget = QWidget()
         sidebar_widget.setLayout(sidebar_layout)
@@ -135,5 +155,14 @@ class MainWindow(QMainWindow):
     def go_to_home(self):
         self.stack.setCurrentIndex(0)
 
-    def on_user_logged_in(self, user):
-        self.statusBar().showMessage(f"Logged in as {user.username}")
+#    def on_user_logged_in(self, user):
+#        self.statusBar().showMessage(f"Logged in as {user.username}")
+
+    def update_status_bar(self):
+        user = self.auth_manager.get_current_user()
+
+        if user:
+            self.statusBar().showMessage(f"Logged in as {user.username}")
+        else:
+            self.statusBar().showMessage("Login to see your tasks")
+

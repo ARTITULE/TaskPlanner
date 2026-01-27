@@ -18,18 +18,24 @@ def run_app():
     main_window = MainWindow(auth_manager=auth_manager)
     main_window.show()
 
-    login_dialog = LoginDialog(parent=main_window)
 
-    def handle_login(email: str, password:str):
+    def open_login():
+        login_dialog = LoginDialog(parent=main_window)
         
-        user = auth_manager.login(email=email, password=password)
-        print(auth_manager.get_current_user())
-        if user:
-            main_window.on_user_logged_in(user)
-            login_dialog.accept()
-#        else:
-#            login_dialog.show_error("Login failed", "Invalid credentials")
+        def handle_login(email: str, password:str):
+            
+            user = auth_manager.login(email=email, password=password)
+            print(auth_manager.get_current_user())
+            if user:
+                main_window.update_status_bar()
+                main_window.user_page.refresh()
+                login_dialog.accept()
+            else:
+                login_dialog.show_error("Login failed", "Invalid credentials")
 
+        login_dialog.signup_requested.connect(open_signup)
+        login_dialog.login_requested.connect(handle_login)
+        login_dialog.exec_()
 
         
 
@@ -38,25 +44,27 @@ def run_app():
 
         def handle_signup(name, surname, email, password):
 
-            signup_dialog = SignupDialog(parent=main_window)
             success = auth_manager.signup(name=name, surname=surname, email=email, password=password)
 
             if success:
                 signup_dialog.accept()
-#            else:
-#                signup_dialog.show_error("Sign Up failed", "Invalid credentials")
+            else:
+                signup_dialog.show_error("Sign Up failed", "Invalid credentials")
 
         signup_dialog.signup_requested.connect(handle_signup)
-        signup_dialog.login_requested.connect(handle_login)
+        signup_dialog.login_requested.connect(open_login)
         signup_dialog.exec_()
 
-    login_dialog.signup_requested.connect(open_signup)
 
-    login_dialog.login_requested.connect(handle_login)
+    def handle_logout():
+        auth_manager.logout()
+        main_window.update_status_bar()
+        main_window.user_page.refresh()
 
-    login_dialog.exec_()
 
-
+    main_window.user_page.login_requested.connect(open_login)
+    main_window.user_page.signup_requested.connect(open_signup)
+    main_window.user_page.logout_requested.connect(handle_logout)
 
 
     sys.exit(app.exec_())

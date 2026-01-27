@@ -17,15 +17,14 @@ class TaskManager:
         )
         self.tasks.append(task)
 
-        self.service.update_task(task=task)
+        self.service.create_task(task=task)
 
         return task
 
     def delete_task(self, task_id: str):
         for task in self.tasks:
             if task.id == task_id:
-                task.deleted = True
-                self.service.update_task(task=task)
+                self.service.delete_task(task=task)
                 break
 
 

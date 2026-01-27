@@ -76,8 +76,9 @@ class SignupDialog(QDialog):
             self.password_input.text()
         )
 
-    def show_error(title: str, message: str):
+    def show_error(self, title: str, message: str):
         QMessageBox.critical(
+            self,
             title,
             message,
             QMessageBox.Ok

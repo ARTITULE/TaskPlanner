@@ -5,15 +5,16 @@ from requests.exceptions import RequestException
 
 class AuthManager:
 
-    Base_URL = "https://introspectional-scalelike-ria.ngrok-free.dev"
 
     def __init__(self):
+
         self.current_user: User | None = None
+        self.Base_URL = "https://introspectional-scalelike-ria.ngrok-free.dev"
 
 
     def login(self, email: str, password:str) -> User | None:
         payload = {
-            "name": email,
+            "email": email,
             "password": password
         }
         print(payload)
@@ -24,7 +25,7 @@ class AuthManager:
                 timeout=5,
             )
         except RequestException:
-            print("1")
+            print("login failed")
             return None
         
         if response.status_code != 200:
@@ -34,6 +35,7 @@ class AuthManager:
 
         user = User(
             username= data["name"],
+            email= email,
             token= data["access_token"]
         )
         
@@ -55,14 +57,36 @@ class AuthManager:
                 timeout=5,
             )
         except RequestException:
-            print("2")
+            print("signup failed")
             return None
         
         return response.status_code == 201
 
     
     def logout(self):
-        self.current_user = None
+
+        if self.current_user:
+
+            payload = {
+                "email": self.current_user.email
+            }
+
+            headers = {
+                "Authorization": f"Bearer {self.current_user.token}",
+                "Content-Type": "application/json",               
+            }
+
+            try:
+                response = payload.post(
+                    f"{self.Base_URL}/logout",
+                    json=payload,
+                    headers=headers,
+                    timeout=5,
+                )
+            except RequestException:
+                print("logout failed")
+
+            self.current_user = None
 
     def is_authenticated(self) -> bool:
         return self.current_user is not None
