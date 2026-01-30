@@ -18,7 +18,7 @@ class TaskService:
         payload = task.to_dict()
 
         headers = {
-            "Authorization": f"Bearer {self.user.token}",
+            "Authorization": f"Bearer {1}",
             "Content-Type": "application/json",
         }
         print(headers)           
@@ -85,7 +85,7 @@ class TaskService:
         payload = task.to_dict()
 
         headers = {
-            "Authorization": f"Bearer {self.user.token}",
+            "Authorization": f"Bearer {1}",
             "Content-Type": "application/json",
         }
         print(headers)           
@@ -102,10 +102,11 @@ class TaskService:
             print("3")
             return None
         
-        
-        if self.verify(response.json()):
+        try:
+            self.verify(response.json())
             print("Got the ok response")
-        else:
+        
+        except RequestException:
             print("there is a problem")
 
         print("sent task update")

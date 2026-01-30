@@ -43,6 +43,7 @@ class Task:
 class TaskWidget(QWidget):
 
     request_delete = pyqtSignal(str)
+    request_edit = pyqtSignal(str)
     completed_changed = pyqtSignal(str, bool)
 
 
@@ -104,6 +105,7 @@ class TaskWidget(QWidget):
     def show_menu(self):
         menu = QMenu(self)
         delete_action = menu.addAction("Delete")
+        update_action = menu.addAction("Edit task")
 
         action = menu.exec_(
             self.menu_button.mapToGlobal(
@@ -113,3 +115,13 @@ class TaskWidget(QWidget):
 
         if action == delete_action:
             self.request_delete.emit(self.task_id)
+
+        if action == update_action:
+            self.request_edit.emit(self.task_id)
+
+
+    def refresh(self):
+
+        self.task_title.setText(self.task.title)
+        if self.task_description:
+            self.task_description.setText(self.task.description)

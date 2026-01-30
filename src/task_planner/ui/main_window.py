@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import (
 
 )
 from PyQt5.QtCore import Qt, pyqtSignal
-from task_planner.ui.add_task_window import AddTaskWindow
+from task_planner.ui.add_task_dialog import AddTaskDialog
 from task_planner.models.task import TaskWidget
 from task_planner.controllers.task_manager import TaskManager
 from task_planner.ui.user_window import UserWindow
@@ -37,14 +37,11 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.stack)
         
         self.home_page = self.init_ui()   
-        self.add_task_page = AddTaskWindow()
         self.user_page = UserWindow(auth_manager=auth_manager)
          
         self.stack.addWidget(self.home_page)     
-        self.stack.addWidget(self.add_task_page)
         self.stack.addWidget(self.user_page)
            
-        self.add_task_page.task_submitted.connect(self.add_task_to_list)
         
         self.task_manager = TaskManager(auth_manager=auth_manager)
 
@@ -75,7 +72,7 @@ class MainWindow(QMainWindow):
         self.task_layout.addStretch() 
 
         
-        self.add_button.clicked.connect(lambda: self.stack.setCurrentIndex(1))
+        self.add_button.clicked.connect(self.open_add_task_dialog)
         self.user_btn.clicked.connect(lambda: self.stack.setCurrentWidget(self.user_page))
 
 
@@ -125,14 +122,48 @@ class MainWindow(QMainWindow):
         
         return splitter
 
+
+    def open_add_task_dialog(self):
+        dialog = AddTaskDialog()
+        dialog.task_submitted.connect(self.add_task_to_list)
+        dialog.exec_()
+
+
+    def open_edit_task_dialog(self, task_id: str):
+        task = self.task_manager.get_task(task_id)
+
+        if not task:
+            return
+        
+        dialog = AddTaskDialog(task=task, parent=self)
+        dialog.task_submitted.connect(self.apply_task_update)
+        dialog.exec_()
+        
+
+
     def add_task_to_list(self, title, description):
 
         task = self.task_manager.add_task(title= title, description= description)
         new_task = TaskWidget(task)
         new_task.request_delete.connect(self.on_task_delete_requested)
+        new_task.request_edit.connect(self.open_edit_task_dialog)
         new_task.completed_changed.connect(self.task_changed)
         self.task_layout.insertWidget(self.task_layout.count() - 1, new_task)
         self.go_to_home()
+
+    def apply_task_update(self, title, description, task_id):
+        
+        self.task_manager.update_task(
+            task_id=task_id,
+            title=title,
+            description=description
+        )
+
+        for i in range(self.task_layout.count()):
+            widget = self.task_layout.itemAt(i).widget()
+            if isinstance(widget, TaskWidget) and widget.task_id == task_id:
+                widget.refresh()
+                break
 
     def task_changed(self, task_id: str, completed: bool):
         self.task_manager.set_completed(task_id, completed)
