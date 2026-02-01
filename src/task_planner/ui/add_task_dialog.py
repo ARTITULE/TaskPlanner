@@ -41,8 +41,9 @@ class AddTaskDialog(QDialog):
         layout.addWidget(self.task_title)
         layout.addWidget(self.task_description)
 
+        button_layout.addStretch()
         button_layout.addWidget(self.save_btn)
-        button_layout.addWidget(self.save_btn)
+        button_layout.addWidget(self.cancel_btn)
 
         layout.addLayout(button_layout)
 
@@ -56,6 +57,7 @@ class AddTaskDialog(QDialog):
         self.setLayout(layout)
 
         self.save_btn.clicked.connect(self.emit_task)
+        self.cancel_btn.clicked.connect(self.reject)
 
     def emit_task(self):
         task_title = self.task_title.text().strip()
