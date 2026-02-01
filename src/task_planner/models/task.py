@@ -93,8 +93,12 @@ class TaskWidget(QWidget):
             self.task_title.setStyleSheet(
                 "color: gray; text-decoration: line-through;"
             )
+            self.task_description.setStyleSheet(
+                "color: gray; text-decoration: line-through"
+            )
         else:
             self.task_title.setStyleSheet("")
+            self.task_description.setStyleSheet("")
 
     def emit_completed(self):
         self.completed_changed.emit(

@@ -1,6 +1,8 @@
 #VS Code
 .vscode/
 
+# Local task storage
+src/task_planner/data/tasks.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
