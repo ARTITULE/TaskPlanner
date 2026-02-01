@@ -1,6 +1,7 @@
 from task_planner.auth.user import User
 import requests
 from requests.exceptions import RequestException
+from task_planner.config import Base_URL
 
 
 class AuthManager:
@@ -9,7 +10,7 @@ class AuthManager:
     def __init__(self):
 
         self.current_user: User | None = None
-        self.Base_URL = "https://introspectional-scalelike-ria.ngrok-free.dev"
+        self.Base_URL = Base_URL
 
 
     def login(self, email: str, password:str) -> User | None:

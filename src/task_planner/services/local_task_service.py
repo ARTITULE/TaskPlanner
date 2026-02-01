@@ -1,11 +1,12 @@
 import json
-from pathlib import Path
 from task_planner.models.task import Task
+from task_planner.config import DATA_PATH
 
 
 class LocalTaskService:
-    def __init__(self, path: str = "src/task_planner/data/tasks.json"):
-        self.path = Path(path)
+    def __init__(self):
+
+        self.path = DATA_PATH
 
         if not self.path.parent.exists():
             self.path.parent.mkdir(parents=True)
@@ -32,7 +33,7 @@ class LocalTaskService:
                 break
         self._save(tasks)
 
-    def delete_task(self, task_id: str):
+    def delete_task(self, task: Task):
         tasks = self._load()
-        tasks = [t for t in tasks if t["uuid"] != task_id]
+        tasks = [t for t in tasks if t["uuid"] != task.id]
         self._save(tasks)

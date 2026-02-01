@@ -1,17 +1,23 @@
 import uuid
+import json
 from task_planner.models.task import Task
 from task_planner.services.task_service import TaskService
 from task_planner.services.local_task_service import LocalTaskService
 from task_planner.auth.auth_manager import AuthManager
+from task_planner.config import DATA_PATH
 
 
 class TaskManager:
+
+
     def __init__(self, auth_manager: AuthManager):
         self.tasks: list[Task] = []
         self.auth_manager = auth_manager
 
         self.remote_service = TaskService(auth_manager=auth_manager)
         self.local_service = LocalTaskService()
+
+        self.data_path = DATA_PATH
 
     def add_task(self, title: str, description: str | None = None) -> Task:
         task = Task(
@@ -61,3 +67,26 @@ class TaskManager:
             return self.remote_service
         else:
             return self.local_service
+        
+
+    def load_tasks(self) -> list[Task]:
+
+        if not self.data_path.exists():
+            return []
+        
+        with self.data_path.open("r", encoding="utf-8") as f:
+            raw_tasks = json.load(f)
+
+        tasks: list[Task] = []
+
+        for item in raw_tasks:
+            task = Task(
+                id= item["uuid"],
+                title= item["title"],
+                description= item.get("description"),
+                completed= item.get("completed=", False),
+            )
+            tasks.append(task)
+        
+        self.tasks = tasks
+        return tasks

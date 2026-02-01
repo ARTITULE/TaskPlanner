@@ -2,12 +2,13 @@ from task_planner.models.task import Task
 from task_planner.auth.auth_manager import AuthManager
 import requests
 from requests.exceptions import RequestException
+from task_planner.config import Base_URL
 
 class TaskService:
 
     def __init__(self, auth_manager: AuthManager):
         self.auth_manager = auth_manager
-        self.Base_URL = "https://introspectional-scalelike-ria.ngrok-free.dev"
+        self.Base_URL = Base_URL
         self.user = self.auth_manager.get_current_user()
     
     def create_task(self, task:Task) -> bool:
@@ -18,7 +19,7 @@ class TaskService:
         payload = task.to_dict()
 
         headers = {
-            "Authorization": f"Bearer {1}",
+            "Authorization": f"Bearer {self.user.token}",
             "Content-Type": "application/json",
         }
         print(headers)           
@@ -85,7 +86,7 @@ class TaskService:
         payload = task.to_dict()
 
         headers = {
-            "Authorization": f"Bearer {1}",
+            "Authorization": f"Bearer {self.user.token}",
             "Content-Type": "application/json",
         }
         print(headers)           

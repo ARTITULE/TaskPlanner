@@ -18,6 +18,8 @@ from task_planner.ui.add_task_dialog import AddTaskDialog
 from task_planner.models.task import TaskWidget
 from task_planner.controllers.task_manager import TaskManager
 from task_planner.ui.user_window import UserWindow
+from task_planner.models.task import Task
+
 
 
 
@@ -47,6 +49,7 @@ class MainWindow(QMainWindow):
 
         self.statusBar()
         self.update_status_bar()
+        self.load_tasks()
 
         
 
@@ -144,12 +147,16 @@ class MainWindow(QMainWindow):
     def add_task_to_list(self, title, description):
 
         task = self.task_manager.add_task(title= title, description= description)
-        new_task = TaskWidget(task)
-        new_task.request_delete.connect(self.on_task_delete_requested)
-        new_task.request_edit.connect(self.open_edit_task_dialog)
-        new_task.completed_changed.connect(self.task_changed)
-        self.task_layout.insertWidget(self.task_layout.count() - 1, new_task)
-        self.go_to_home()
+        self.render_task(task=task)
+
+
+    def render_task(self, task: Task):
+        task_to_load = TaskWidget(task=task)
+        task_to_load.request_delete.connect(self.on_task_delete_requested)
+        task_to_load.request_edit.connect(self.open_edit_task_dialog)
+        task_to_load.completed_changed.connect(self.task_changed)
+        self.task_layout.insertWidget(self.task_layout.count() - 1, task_to_load)
+
 
     def apply_task_update(self, title, description, task_id):
         
@@ -164,6 +171,7 @@ class MainWindow(QMainWindow):
             if isinstance(widget, TaskWidget) and widget.task_id == task_id:
                 widget.refresh()
                 break
+
 
     def task_changed(self, task_id: str, completed: bool):
         self.task_manager.set_completed(task_id, completed)
@@ -183,11 +191,14 @@ class MainWindow(QMainWindow):
                 break
 
 
-    def go_to_home(self):
-        self.stack.setCurrentIndex(0)
+    def load_tasks(self):
+        tasks = self.task_manager.load_tasks()
+        for task in tasks:
+            self.render_task(task=task)
 
 #    def on_user_logged_in(self, user):
 #        self.statusBar().showMessage(f"Logged in as {user.username}")
+
 
     def update_status_bar(self):
         user = self.auth_manager.get_current_user()
