@@ -83,12 +83,13 @@ class TaskWidget(QWidget):
         layout.addStretch()
         layout.addWidget(self.menu_button)
 
-        self.checkbox.stateChanged.connect(self.update_style)
         self.checkbox.stateChanged.connect(self.emit_completed)
         self.menu_button.clicked.connect(self.show_menu)
 
+        self.sync_from_task()
+
     def update_style(self):
-        self.task.completed = self.checkbox.isChecked()
+        
         if self.task.completed:
             self.task_title.setStyleSheet(
                 "color: gray; text-decoration: line-through;"
@@ -101,6 +102,11 @@ class TaskWidget(QWidget):
             self.task_description.setStyleSheet("")
 
     def emit_completed(self):
+        completed = self.checkbox.isChecked()
+
+        self.task.completed = completed
+        self.update_style()
+        
         self.completed_changed.emit(
             self.task_id,
             self.checkbox.isChecked()
@@ -129,3 +135,11 @@ class TaskWidget(QWidget):
         self.task_title.setText(self.task.title)
         if self.task_description:
             self.task_description.setText(self.task.description)
+
+
+    def sync_from_task(self):
+        self.checkbox.blockSignals(True)
+        self.checkbox.setChecked(self.task.completed)
+        self.checkbox.blockSignals(False)
+
+        self.update_style()

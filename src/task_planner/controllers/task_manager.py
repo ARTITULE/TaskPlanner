@@ -84,7 +84,7 @@ class TaskManager:
                 id= item["uuid"],
                 title= item["title"],
                 description= item.get("description"),
-                completed= item.get("completed=", False),
+                completed= item.get("completed", False),
             )
             tasks.append(task)
         
