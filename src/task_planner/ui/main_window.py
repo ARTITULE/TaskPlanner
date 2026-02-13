@@ -144,13 +144,14 @@ class MainWindow(QMainWindow):
         
 
 
-    def handle_task_submitted(self, title, description, task_id, category):
+    def handle_task_submitted(self, title, description, task_id, category, exp_time):
 
         if task_id:  # EDIT
             self.task_manager.update_task(
                 task_id=task_id,
                 title=title,
                 description=description,
+                exp_time=exp_time,
                 category=category,
             )
 
@@ -164,6 +165,7 @@ class MainWindow(QMainWindow):
             task = self.task_manager.add_task(
                 title=title,
                 description=description,
+                exp_time=exp_time,
                 category=category,
             )
             self.render_task(task)

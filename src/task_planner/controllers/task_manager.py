@@ -5,6 +5,7 @@ from task_planner.services.task_service import TaskService
 from task_planner.services.local_task_service import LocalTaskService
 from task_planner.auth.auth_manager import AuthManager
 from task_planner.config import DATA_PATH
+from datetime import date
 
 
 class TaskManager:
@@ -19,11 +20,12 @@ class TaskManager:
 
         self.data_path = DATA_PATH
 
-    def add_task(self, title: str, description: str | None = None, category: str | None = None) -> Task:
+    def add_task(self, title: str, description: str | None = None, category: str | None = None, exp_time = None) -> Task:
         task = Task(
             id = str(uuid.uuid4()),
             title = title, 
             description = description,
+            exp_time = exp_time,
             category = category
         )
         self.tasks.append(task)
@@ -33,12 +35,13 @@ class TaskManager:
 
         return task
 
-    def update_task(self, task_id: str, title: str, description: str, category: str):
+    def update_task(self, task_id: str, title: str, description: str, category: str, exp_time):
         for task in self.tasks:
             if task.id == task_id:
                 task.title = title
                 task.description = description
                 task.category = category
+                task.exp_time = exp_time
                 service = self.get_service()
                 service.update_task(task=task)
                 break
@@ -86,6 +89,7 @@ class TaskManager:
                 id= item["uuid"],
                 title= item["title"],
                 description= item.get("description"),
+                exp_time= date.fromisoformat(item.get("exp_time")) if item.get("exp_time") else None,
                 category= item.get("category"),
                 completed= item.get("completed", False),
             )

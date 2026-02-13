@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import (
 
 )
 from PyQt5.QtCore import Qt, pyqtSignal
-import uuid
+from datetime import date
 from dataclasses import dataclass, field
 
 @dataclass
@@ -31,7 +31,7 @@ class Task:
             "uuid": self.id,
             "title": self.title,
             "description": self.description,
-            "exp_time": self.exp_time,
+            "exp_time": self.exp_time.isoformat() if self.exp_time else None,
             "category": self.category,
             "completed": self.completed,
         }
@@ -92,12 +92,13 @@ class TaskWidget(QWidget):
             self.task_title.setStyleSheet(
                 "color: gray; text-decoration: line-through;"
             )
-            self.task_description.setStyleSheet(
-                "color: gray; text-decoration: line-through"
-            )
+            if self.task_description:
+                self.task_description.setStyleSheet(
+                    "color: gray; text-decoration: line-through"
+                )
         else:
             self.task_title.setStyleSheet("")
-            self.task_description.setStyleSheet("")
+            self.task_description.setStyleSheet("") if self.task_description else None
 
     def emit_completed(self):
         completed = self.checkbox.isChecked()
