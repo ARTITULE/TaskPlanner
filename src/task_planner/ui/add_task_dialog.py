@@ -15,6 +15,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, pyqtSignal, QDate
 from datetime import date
 from task_planner.models.task import Task
+from task_planner.config import Categories
 
 
 class AddTaskDialog(QDialog):
@@ -24,6 +25,7 @@ class AddTaskDialog(QDialog):
     def __init__(self, task: Task | None = None, parent=None):
 
         super().__init__(parent=parent)
+        self.setWindowTitle("Add Task")
 
         self.task = task
 
@@ -44,13 +46,13 @@ class AddTaskDialog(QDialog):
         self.due_date_edit = QDateEdit()
         self.due_date_edit.setCalendarPopup(True)
         self.due_date_edit.setDisplayFormat("dd-MM-yyyy")
-        self.due_date_edit.setSpecialValueText("No due date")
+        self.due_date_edit.setKeyboardTracking(False)
         self.due_date_edit.setDate(QDate.currentDate())
         self.due_date_edit.setMinimumDate(QDate(2000, 1, 1))
 
         self.category_label = QLabel("Category")
         self.category_box = QComboBox()
-        self.category_box.addItems(["None", "Work", "School", "Home"])
+        self.category_box.addItems(Categories)
 
         self.save_btn = QPushButton("Save Task")
         self.cancel_btn = QPushButton("Cancel")
