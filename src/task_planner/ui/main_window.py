@@ -128,7 +128,7 @@ class MainWindow(QMainWindow):
 
     def open_add_task_dialog(self):
         dialog = AddTaskDialog()
-        dialog.task_submitted.connect(self.add_task_to_list)
+        dialog.task_submitted.connect(self.handle_task_submitted)
         dialog.exec_()
 
 
@@ -139,15 +139,35 @@ class MainWindow(QMainWindow):
             return
         
         dialog = AddTaskDialog(task=task, parent=self)
-        dialog.task_submitted.connect(self.apply_task_update)
+        dialog.task_submitted.connect(self.handle_task_submitted)
         dialog.exec_()
         
 
 
-    def add_task_to_list(self, title, description):
+    def handle_task_submitted(self, title, description, task_id, category):
 
-        task = self.task_manager.add_task(title= title, description= description)
-        self.render_task(task=task)
+        if task_id:  # EDIT
+            self.task_manager.update_task(
+                task_id=task_id,
+                title=title,
+                description=description,
+                category=category,
+            )
+
+            for i in range(self.task_layout.count()):
+                widget = self.task_layout.itemAt(i).widget()
+                if isinstance(widget, TaskWidget) and widget.task_id == task_id:
+                    widget.refresh()
+                    break
+
+        else:  # CREATE
+            task = self.task_manager.add_task(
+                title=title,
+                description=description,
+                category=category,
+            )
+            self.render_task(task)
+
 
 
     def render_task(self, task: Task):
@@ -163,7 +183,8 @@ class MainWindow(QMainWindow):
         self.task_manager.update_task(
             task_id=task_id,
             title=title,
-            description=description
+            description=description,
+            
         )
 
         for i in range(self.task_layout.count()):

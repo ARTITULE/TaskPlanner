@@ -19,11 +19,12 @@ class TaskManager:
 
         self.data_path = DATA_PATH
 
-    def add_task(self, title: str, description: str | None = None) -> Task:
+    def add_task(self, title: str, description: str | None = None, category: str | None = None) -> Task:
         task = Task(
             id = str(uuid.uuid4()),
             title = title, 
-            description = description
+            description = description,
+            category = category
         )
         self.tasks.append(task)
 
@@ -32,11 +33,12 @@ class TaskManager:
 
         return task
 
-    def update_task(self, task_id: str, title: str, description: str):
+    def update_task(self, task_id: str, title: str, description: str, category: str):
         for task in self.tasks:
-            if task_id == task_id:
+            if task.id == task_id:
                 task.title = title
                 task.description = description
+                task.category = category
                 service = self.get_service()
                 service.update_task(task=task)
                 break
@@ -84,6 +86,7 @@ class TaskManager:
                 id= item["uuid"],
                 title= item["title"],
                 description= item.get("description"),
+                category= item.get("category"),
                 completed= item.get("completed", False),
             )
             tasks.append(task)

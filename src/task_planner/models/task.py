@@ -22,9 +22,8 @@ class Task:
     id: str 
     title: str
     description: str | None = None
-    exp_time = None
-    creator_name = None
-    category = None
+    exp_time: str | None = None
+    category: str | None = None
     completed: bool = False
 
     def to_dict(self) -> dict:
@@ -33,7 +32,6 @@ class Task:
             "title": self.title,
             "description": self.description,
             "exp_time": self.exp_time,
-            #"creator_name": self.creator_name,
             "category": self.category,
             "completed": self.completed,
         }
