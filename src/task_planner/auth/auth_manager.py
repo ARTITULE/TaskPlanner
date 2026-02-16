@@ -78,7 +78,7 @@ class AuthManager:
             }
 
             try:
-                response = payload.post(
+                response = requests.post(
                     f"{self.Base_URL}/logout",
                     json=payload,
                     headers=headers,

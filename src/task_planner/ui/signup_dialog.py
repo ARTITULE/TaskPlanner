@@ -72,7 +72,7 @@ class SignupDialog(QDialog):
         self.signup_requested.emit(
             self.name_input.text(),
             self.surname_input.text(),
-            self.password_input.text(),
+            self.email_input.text(),
             self.password_input.text()
         )
 
