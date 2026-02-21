@@ -14,6 +14,7 @@ from PyQt5.QtWidgets import (
 
 )
 from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtGui import QFont
 from datetime import date
 from dataclasses import dataclass, field
 
@@ -54,10 +55,17 @@ class TaskWidget(QWidget):
 
         self.task_title = QLabel(task.title)
         self.task_title.setWordWrap(True)
+        title_font = QFont()
+        title_font.setPointSize(12)
+        title_font.setBold(True)
+        self.task_title.setFont(title_font)
 
         if task.description:
             self.task_description = QLabel(task.description)
             self.task_description.setWordWrap(True)
+            desc_font = QFont()
+            desc_font.setPointSize(9)
+            self.task_description.setFont(desc_font)
         else:
             self.task_description = None
         

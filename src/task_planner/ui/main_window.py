@@ -55,7 +55,10 @@ class MainWindow(QMainWindow):
 
     def init_ui(self):
         
-        self.today_btn = QPushButton("Today")
+        self.today_btn = QPushButton("My Day")
+        self.important_btn = QPushButton("Important")
+        self.completed_btn = QPushButton("Completed")
+        self.tasks_btn = QPushButton("Tasks")
         self.calendar_btn = QPushButton("Calendar")
         self.groups_btn = QPushButton("Groups")
 
@@ -84,6 +87,7 @@ class MainWindow(QMainWindow):
 
 
         self.today_btn.clicked.connect(self.show_today)
+        self.tasks_btn.clicked.connect(self.show_tasks)
         self.calendar_btn.clicked.connect(self.show_calendar)
         self.calendar_view.date_selected.connect(self.on_date_selected)
         self.user_btn.clicked.connect(self.show_user_page)
@@ -91,6 +95,9 @@ class MainWindow(QMainWindow):
         sidebar_layout = QVBoxLayout()
         sidebar_layout.addWidget(QLabel("Navigation"))
         sidebar_layout.addWidget(self.today_btn)
+        sidebar_layout.addWidget(self.important_btn)
+        sidebar_layout.addWidget(self.completed_btn)
+        sidebar_layout.addWidget(self.tasks_btn)
         sidebar_layout.addWidget(self.calendar_btn)
         sidebar_layout.addWidget(self.groups_btn)
         sidebar_layout.addStretch()
@@ -157,6 +164,10 @@ class MainWindow(QMainWindow):
 
     def show_today(self):
         self.day_view.set_date(date.today())
+        self.content_stack.setCurrentWidget(self.day_view)
+
+    def show_tasks(self):
+        self.day_view.show_all_tasks()
         self.content_stack.setCurrentWidget(self.day_view)
 
     def show_calendar(self):
