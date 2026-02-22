@@ -56,6 +56,7 @@ class TaskWidget(QWidget):
         self.task_title = QLabel(task.title)
         self.task_title.setWordWrap(True)
         title_font = QFont()
+        title_font.setFamily("sans-serif")
         title_font.setPointSize(12)
         title_font.setBold(True)
         self.task_title.setFont(title_font)
@@ -64,6 +65,7 @@ class TaskWidget(QWidget):
             self.task_description = QLabel(task.description)
             self.task_description.setWordWrap(True)
             desc_font = QFont()
+            desc_font.setFamily("sans-serif")
             desc_font.setPointSize(9)
             self.task_description.setFont(desc_font)
         else:

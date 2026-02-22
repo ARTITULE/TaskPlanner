@@ -5,23 +5,20 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QStackedWidget,
     QLabel,
-    QPushButton,
-    QLineEdit,
-    QScrollArea,
     QSplitter,
-    QCheckBox,
-    QMenu,
-
+    QAction,
+    qApp,
 )
 from PyQt5.QtCore import Qt, pyqtSignal
 from task_planner.ui.add_task_dialog import AddTaskDialog
-from task_planner.models.task import TaskWidget
+from task_planner.models.task import Task
 from task_planner.controllers.task_manager import TaskManager
 from task_planner.ui.user_window import UserWindow
-from task_planner.models.task import Task
 from datetime import date
 from task_planner.ui.day_view import DayView
 from task_planner.ui.calendar_view import CalendarView
+from task_planner.ui.widgets import MenuButton
+from task_planner.config import MENU_ICONS
 
 
 
@@ -54,22 +51,31 @@ class MainWindow(QMainWindow):
         
 
     def init_ui(self):
+
+        menu_bar = self.menuBar()
+        menu_bar.setNativeMenuBar(False)
         
-        self.today_btn = QPushButton("My Day")
-        self.important_btn = QPushButton("Important")
-        self.completed_btn = QPushButton("Completed")
-        self.tasks_btn = QPushButton("Tasks")
-        self.calendar_btn = QPushButton("Calendar")
-        self.groups_btn = QPushButton("Groups")
+        file_menu = menu_bar.addMenu("File")
+        quit_action = QAction("Quit", self)
+        quit_action.triggered.connect(qApp.quit)
+        file_menu.addAction(quit_action)
 
-        self.settings_btn = QPushButton("Settings")
-        self.user_btn = QPushButton("User")
+        help_menu = menu_bar.addMenu("Help")
+        about_action = QAction("About Task Planner", self)
+        about_action.triggered.connect(self.show_about_dialog)
+        help_menu.addAction(about_action)
 
         
+        self.today_btn = MenuButton("My Day", MENU_ICONS.get("My Day"))
+        self.important_btn = MenuButton("Important", MENU_ICONS.get("Important"))
+        self.completed_btn = MenuButton("Completed", MENU_ICONS.get("Completed"))
+        self.tasks_btn = MenuButton("Tasks", MENU_ICONS.get("Tasks"))
+        self.calendar_btn = MenuButton("Calendar", MENU_ICONS.get("Calendar"))
+        self.groups_btn = MenuButton("Groups", MENU_ICONS.get("Groups"))
 
-
-
-
+        self.settings_btn = MenuButton("Settings", MENU_ICONS.get("Settings"))
+        self.user_btn = MenuButton("User", MENU_ICONS.get("User"))
+        
         self.content_stack = QStackedWidget()
 
         self.day_view = DayView(
@@ -88,6 +94,7 @@ class MainWindow(QMainWindow):
 
         self.today_btn.clicked.connect(self.show_today)
         self.tasks_btn.clicked.connect(self.show_tasks)
+        self.completed_btn.clicked.connect(self.show_completed)
         self.calendar_btn.clicked.connect(self.show_calendar)
         self.calendar_view.date_selected.connect(self.on_date_selected)
         self.user_btn.clicked.connect(self.show_user_page)
@@ -122,12 +129,15 @@ class MainWindow(QMainWindow):
         
         self.setCentralWidget(splitter)
 
-
+    def show_about_dialog(self):
+        # Placeholder for the about dialog
+        pass
 
     def open_add_task_dialog(self):
         dialog = AddTaskDialog()
         dialog.task_submitted.connect(self.handle_task_submitted)
         dialog.exec_()
+
 
 
     def open_edit_task_dialog(self, task_id: str):
@@ -168,6 +178,10 @@ class MainWindow(QMainWindow):
 
     def show_tasks(self):
         self.day_view.show_all_tasks()
+        self.content_stack.setCurrentWidget(self.day_view)
+    
+    def show_completed(self):
+        self.day_view.show_completed_tasks()
         self.content_stack.setCurrentWidget(self.day_view)
 
     def show_calendar(self):

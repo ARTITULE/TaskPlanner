@@ -12,6 +12,7 @@ from task_planner.auth.auth_manager import AuthManager
 def run_app():
 
     app = QApplication(sys.argv)
+    app.setApplicationName("Task Planner")
 
     auth_manager = AuthManager()
 

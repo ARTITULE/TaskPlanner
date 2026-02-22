@@ -18,3 +18,14 @@ Categories = ["None",
               "Health",
               "Inbox",
               ]
+
+MENU_ICONS = {
+    "My Day": "",
+    "Important": "",
+    "Completed": "",
+    "Tasks": "",
+    "Calendar": "",
+    "Groups": "",
+    "Settings": "",
+    "User": "",
+}

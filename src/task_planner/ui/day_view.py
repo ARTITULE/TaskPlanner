@@ -10,48 +10,8 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QFont, QMouseEvent
 from task_planner.models.task import TaskWidget
-from datetime import date
-
-
-class AddTaskWidget(QWidget):
-    clicked = pyqtSignal()
-
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.init_ui()
-
-    def init_ui(self):
-        self.setMinimumHeight(60)
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-
-        layout = QHBoxLayout(self)
-        layout.setContentsMargins(10, 5, 10, 5)
-
-        self.title_label = QLabel("+ Add a task")
-        font = QFont()
-        self.title_label.setFont(font)
-        #self.title_label.setStyleSheet("color: #555;")
-
-        layout.addWidget(self.title_label)
-        layout.addStretch()
-
-        self.setStyleSheet(
-            """
-            AddTaskWidget {
-                background-color: #f0f0f0;
-                border: 1px dashed #aaa;
-                border-radius: 5px;
-            }
-            AddTaskWidget:hover {
-                background-color: #e0e0e0;
-            }
-        """
-        )
-        self.setCursor(Qt.PointingHandCursor)
-
-    def mousePressEvent(self, event: QMouseEvent):
-        if event.button() == Qt.LeftButton:
-            self.clicked.emit()
+from task_planner.ui.widgets import AddTaskWidget
+from datetime import date, timedelta
 
 
 class DayView(QWidget):
@@ -62,7 +22,7 @@ class DayView(QWidget):
         self.open_add_dialog = open_add_dialog
         self.open_edit_dialog = open_edit_dialog
         self.current_date = date.today()
-        self.view_mode = "day"  # Modes: "day", "all_tasks"
+        self.view_mode = "day"
 
         self.init_ui()
 
@@ -75,9 +35,21 @@ class DayView(QWidget):
         self.date_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
         
         date_font = QFont()
+        date_font.setFamily("sans-serif")
         date_font.setPointSize(50)
         self.date_label.setFont(date_font)
-        self.date_label.setStyleSheet("padding: 40px 40px 40px 0px;")
+        self.date_label.setStyleSheet(
+            """
+            QLabel {
+                background-color: #3C3C3C;
+                color: white;
+                padding: 40px;
+                border-left: 1px solid #5A5A5A;
+                border-right: 1px solid #5A5A5A;
+                border-bottom: 1px solid #5A5A5A;
+            }
+            """
+        )
 
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidgetResizable(True)
@@ -88,7 +60,6 @@ class DayView(QWidget):
         self.task_list_layout.setContentsMargins(10, 5, 10, 5)
         self.task_list_layout.setSpacing(5)
 
-        # Add the custom "Add Task" button at the end of the list
         self.add_task_widget = AddTaskWidget()
         self.add_task_widget.clicked.connect(self.open_add_dialog)
         self.task_list_layout.addWidget(self.add_task_widget)
@@ -104,15 +75,26 @@ class DayView(QWidget):
 
     def set_date(self, new_date):
         self.view_mode = "day"
+        self.add_task_widget.show()
         self.current_date = new_date
-        self.date_label.setText(
-            f"{'My Day ,' if new_date == date.today() else ''} {self.current_date.strftime('%B %d')}"
-        )
+        if new_date == date.today():
+            self.date_label.setText(
+                f"My Day<br><span style='font-size: 30pt;'>{self.current_date.strftime('%B %d')}</span>"
+            )
+        else:
+            self.date_label.setText(self.current_date.strftime('%B %d'))
         self.refresh_tasks()
 
     def show_all_tasks(self):
         self.view_mode = "all_tasks"
+        self.add_task_widget.show()
         self.date_label.setText("Tasks")
+        self.refresh_tasks()
+
+    def show_completed_tasks(self):
+        self.view_mode = "completed"
+        self.add_task_widget.hide()
+        self.date_label.setText("Completed")
         self.refresh_tasks()
 
     def refresh_tasks(self):
@@ -124,15 +106,24 @@ class DayView(QWidget):
                 widget.deleteLater()
 
         tasks = self.task_manager.load_tasks()
+        today = date.today()
+        seven_days = timedelta(days=7)
 
         for task in tasks:
             show_task = False
             if self.view_mode == "day":
-                if task.exp_time == self.current_date:
+                if task.exp_time == self.current_date and not task.completed:
                     show_task = True
             elif self.view_mode == "all_tasks":
                 if not task.completed:
                     show_task = True
+            elif self.view_mode == "completed":
+                if task.completed:
+                    if task.exp_time is None:
+                        show_task = True
+                    else:
+                        if today - seven_days <= task.exp_time <= today + seven_days:
+                            show_task = True
 
             if show_task:
                 task_widget = TaskWidget(task=task)
