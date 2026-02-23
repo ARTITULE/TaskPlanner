@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QSizePolicy, QPushButton
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QFont, QMouseEvent
+from PyQt5.QtCore import Qt, pyqtSignal, QSize
+from PyQt5.QtGui import QFont, QMouseEvent, QIcon
 
 
 class AddTaskWidget(QWidget):
@@ -44,10 +44,15 @@ class AddTaskWidget(QWidget):
 
 
 class MenuButton(QPushButton):
-    def __init__(self, text, icon_char, parent=None):
-        super().__init__(f"{icon_char}  {text}", parent)
+    def __init__(self, text, icon_path, parent=None):
+        super().__init__(text, parent)
         self.setFlat(True)
         self.setCursor(Qt.PointingHandCursor)
+        
+        if icon_path:
+            self.setIcon(QIcon(icon_path))
+            self.setIconSize(QSize(16, 16))
+
         self.setStyleSheet(
             """
             QPushButton {

@@ -20,12 +20,12 @@ Categories = ["None",
               ]
 
 MENU_ICONS = {
-    "My Day": "",
-    "Important": "",
-    "Completed": "",
-    "Tasks": "",
-    "Calendar": "",
+    "My Day": "src/task_planner/icons/sun/icons8-sun.svg",
+    "Important": "src/task_planner/icons/star/star.svg",
+    "Completed": "src/task_planner/icons/check_box/icons8-check-mark-checked.svg",
+    "Tasks": "src/task_planner/icons/home/icons8-home.svg",
+    "Calendar": "src/task_planner/icons/calendar/calendar.svg",
     "Groups": "",
-    "Settings": "",
-    "User": "",
+    "Settings": "src/task_planner/icons/settings/icons8-settings.svg",
+    "User": "src/task_planner/icons/user/user.svg",
 }
