@@ -45,4 +45,9 @@ IMPORTANT_ICONS = {
     "Filled": "src/task_planner/icons/star/filled-star.svg",
     "Outline": "src/task_planner/icons/star/star.svg",
 }
+
+PASSWORD_ICONS = {
+    "Visible": "src/task_planner/icons/user/eye.svg",
+    "Hidden": "src/task_planner/icons/user/eye-off.svg",
+}
     

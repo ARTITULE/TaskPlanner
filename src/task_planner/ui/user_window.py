@@ -20,9 +20,25 @@ class UserWindow(QWidget):
         self.auth_manager = auth_manager
 
         self.setWindowTitle("User")
-        self.setFixedSize(300, 200)
+        self.setFixedSize(350, 250)
+        self.setStyleSheet(
+            """
+            QWidget {
+                background-color: #2B2B2B;
+            }
+            QLabel {
+                color: #FFFFFF;
+                font-size: 18px;
+                font-weight: bold;
+                margin-bottom: 20px;
+                font-family: "sans-serif";
+            }
+            """
+        )
 
         self.layout = QVBoxLayout(self)
+        self.layout.setContentsMargins(30, 30, 30, 30)
+        self.layout.setSpacing(10)
 
         self.status_label = QLabel()
         self.layout.addWidget(self.status_label)
