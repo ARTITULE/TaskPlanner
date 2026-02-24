@@ -68,3 +68,37 @@ class MenuButton(QPushButton):
         """
         )
 
+
+class CheckMarkWidget(QPushButton):
+    state_changed = pyqtSignal(bool)
+
+    def __init__(self, checked_icon_path, unchecked_icon_path, checked=False, parent=None):
+        super().__init__(parent)
+        self.checked_icon = QIcon(checked_icon_path)
+        self.unchecked_icon = QIcon(unchecked_icon_path)
+        self.is_checked = checked
+        
+        self.setFlat(True)
+        self.setCursor(Qt.PointingHandCursor)
+        self.setFixedSize(32, 32)
+        self.setIconSize(QSize(24, 24))
+        
+        self.clicked.connect(self.toggle_state)
+        self.update_icon()
+
+    def toggle_state(self):
+        self.is_checked = not self.is_checked
+        self.update_icon()
+        self.state_changed.emit(self.is_checked)
+
+    def setChecked(self, checked):
+        if self.is_checked != checked:
+            self.is_checked = checked
+            self.update_icon()
+
+    def isChecked(self):
+        return self.is_checked
+
+    def update_icon(self):
+        self.setIcon(self.checked_icon if self.is_checked else self.unchecked_icon)
+

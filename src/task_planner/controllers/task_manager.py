@@ -46,6 +46,14 @@ class TaskManager:
                 service.update_task(task=task)
                 break
 
+    def set_category(self, task_id: str, category: str):
+        for task in self.tasks:
+            if task.id == task_id:
+                task.category = category
+                service = self.get_service()
+                service.update_task(task=task)
+                break
+
     def delete_task(self, task_id: str):
         for task in self.tasks:
             if task.id == task_id:

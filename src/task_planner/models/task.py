@@ -9,7 +9,6 @@ from PyQt5.QtWidgets import (
     QLineEdit,
     QScrollArea,
     QSplitter,
-    QCheckBox,
     QMenu,
 
 )
@@ -17,6 +16,8 @@ from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QFont
 from datetime import date
 from dataclasses import dataclass, field
+from task_planner.ui.widgets import CheckMarkWidget
+from task_planner.config import CHECK_MARK_ICONS, IMPORTANT_ICONS
 
 @dataclass
 class Task:
@@ -44,12 +45,17 @@ class TaskWidget(QWidget):
     request_delete = pyqtSignal(str)
     request_edit = pyqtSignal(str)
     completed_changed = pyqtSignal(str, bool)
+    important_changed = pyqtSignal(str, bool)
 
 
     def __init__(self, task: Task, parent=None):
         super().__init__(parent)
 
-        self.checkbox = QCheckBox()
+        self.checkbox = CheckMarkWidget(
+            checked_icon_path=CHECK_MARK_ICONS.get("Checked"),
+            unchecked_icon_path=CHECK_MARK_ICONS.get("Unchecked"),
+            checked=task.completed
+        )
         self.task = task
         self.task_id = task.id
 
@@ -61,17 +67,19 @@ class TaskWidget(QWidget):
         title_font.setBold(True)
         self.task_title.setFont(title_font)
 
-        if task.description:
-            self.task_description = QLabel(task.description)
-            self.task_description.setWordWrap(True)
-            desc_font = QFont()
-            desc_font.setFamily("sans-serif")
-            desc_font.setPointSize(9)
-            self.task_description.setFont(desc_font)
-        else:
-            self.task_description = None
+        self.task_info = QLabel()
+        info_font = QFont()
+        info_font.setFamily("sans-serif")
+        info_font.setPointSize(9)
+        self.task_info.setFont(info_font)
         
 
+
+        self.important_star = CheckMarkWidget(
+            checked_icon_path=IMPORTANT_ICONS.get("Filled"),
+            unchecked_icon_path=IMPORTANT_ICONS.get("Outline"),
+            checked=(task.category == "Important")
+        )
 
         self.menu_button = QPushButton("⋮")
         self.menu_button.setFixedWidth(64)
@@ -83,18 +91,24 @@ class TaskWidget(QWidget):
 
         text_layout = QVBoxLayout()
         text_layout.addWidget(self.task_title)
-
-        if self.task.description:
-            text_layout.addWidget(self.task_description)
+        text_layout.addWidget(self.task_info)
         
         layout.addLayout(text_layout)
         layout.addStretch()
+        layout.addWidget(self.important_star)
         layout.addWidget(self.menu_button)
 
-        self.checkbox.stateChanged.connect(self.emit_completed)
+        self.checkbox.state_changed.connect(self.emit_completed)
+        self.important_star.state_changed.connect(self.toggle_important)
         self.menu_button.clicked.connect(self.show_menu)
 
         self.sync_from_task()
+
+    def toggle_important(self, is_important):
+        new_category = "Important" if is_important else "None"
+        self.task.category = new_category
+        self.refresh()
+        self.important_changed.emit(self.task_id, is_important)
 
     def update_style(self):
         
@@ -102,13 +116,12 @@ class TaskWidget(QWidget):
             self.task_title.setStyleSheet(
                 "color: gray; text-decoration: line-through;"
             )
-            if self.task_description:
-                self.task_description.setStyleSheet(
-                    "color: gray; text-decoration: line-through"
-                )
+            self.task_info.setStyleSheet(
+                "color: gray; text-decoration: line-through"
+            )
         else:
             self.task_title.setStyleSheet("")
-            self.task_description.setStyleSheet("") if self.task_description else None
+            self.task_info.setStyleSheet("color: #888;")
 
     def emit_completed(self):
         completed = self.checkbox.isChecked()
@@ -140,10 +153,21 @@ class TaskWidget(QWidget):
 
 
     def refresh(self):
-
         self.task_title.setText(self.task.title)
-        if self.task_description:
-            self.task_description.setText(self.task.description)
+        
+        info_parts = []
+        if self.task.exp_time:
+            # Assuming exp_time is a date object
+            info_parts.append(self.task.exp_time.strftime("%d/%m"))
+        
+        if self.task.category and self.task.category != "None":
+            info_parts.append(self.task.category)
+        
+        if info_parts:
+            self.task_info.setText(" | ".join(info_parts))
+            self.task_info.show()
+        else:
+            self.task_info.hide()
 
 
     def sync_from_task(self):
@@ -151,4 +175,5 @@ class TaskWidget(QWidget):
         self.checkbox.setChecked(self.task.completed)
         self.checkbox.blockSignals(False)
 
+        self.refresh()
         self.update_style()

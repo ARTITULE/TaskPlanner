@@ -93,6 +93,7 @@ class MainWindow(QMainWindow):
 
 
         self.today_btn.clicked.connect(self.show_today)
+        self.important_btn.clicked.connect(self.show_important)
         self.tasks_btn.clicked.connect(self.show_tasks)
         self.completed_btn.clicked.connect(self.show_completed)
         self.calendar_btn.clicked.connect(self.show_calendar)
@@ -174,6 +175,10 @@ class MainWindow(QMainWindow):
 
     def show_today(self):
         self.day_view.set_date(date.today())
+        self.content_stack.setCurrentWidget(self.day_view)
+
+    def show_important(self):
+        self.day_view.show_important_tasks()
         self.content_stack.setCurrentWidget(self.day_view)
 
     def show_tasks(self):

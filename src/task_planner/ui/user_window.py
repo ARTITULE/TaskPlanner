@@ -2,9 +2,10 @@ from PyQt5.QtWidgets import (
     QWidget, 
     QVBoxLayout, 
     QLabel, 
-    QPushButton
 )
 from PyQt5.QtCore import pyqtSignal
+from task_planner.ui.widgets import MenuButton
+from task_planner.config import USER_WINDOW_ICONS
 
 
 class UserWindow(QWidget):
@@ -26,9 +27,9 @@ class UserWindow(QWidget):
         self.status_label = QLabel()
         self.layout.addWidget(self.status_label)
 
-        self.login_btn = QPushButton("Login")
-        self.signup_btn = QPushButton("Sign up")
-        self.logout_btn = QPushButton("Logout")
+        self.login_btn = MenuButton("Login", USER_WINDOW_ICONS.get("Login"))
+        self.signup_btn = MenuButton("Sign up", USER_WINDOW_ICONS.get("Sign Up"))
+        self.logout_btn = MenuButton("Logout", USER_WINDOW_ICONS.get("Logout"))
 
         self.layout.addWidget(self.login_btn)
         self.layout.addWidget(self.signup_btn)

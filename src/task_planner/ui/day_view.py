@@ -97,6 +97,12 @@ class DayView(QWidget):
         self.date_label.setText("Completed")
         self.refresh_tasks()
 
+    def show_important_tasks(self):
+        self.view_mode = "important"
+        self.add_task_widget.show()
+        self.date_label.setText("Important")
+        self.refresh_tasks()
+
     def refresh_tasks(self):
         # Clear existing task widgets and separators, but not the add task button or stretch
         for i in reversed(range(self.task_list_layout.count())):
@@ -112,22 +118,27 @@ class DayView(QWidget):
         for task in tasks:
             show_task = False
             if self.view_mode == "day":
-                if task.exp_time == self.current_date and not task.completed:
+                if task.exp_time == self.current_date:
                     show_task = True
             elif self.view_mode == "all_tasks":
                 if not task.completed:
                     show_task = True
             elif self.view_mode == "completed":
                 if task.completed:
-                    if task.exp_time is None:
+                    if task.exp_time == today:
+                        show_task = False
+                    elif task.exp_time is None:
                         show_task = True
-                    else:
-                        if today - seven_days <= task.exp_time <= today + seven_days:
-                            show_task = True
+                    elif today - seven_days <= task.exp_time <= today + seven_days:
+                        show_task = True
+            elif self.view_mode == "important":
+                if task.category == "Important":
+                    show_task = True
 
             if show_task:
                 task_widget = TaskWidget(task=task)
                 task_widget.completed_changed.connect(self.handle_task_completed)
+                task_widget.important_changed.connect(self.handle_task_important)
                 task_widget.request_delete.connect(self.handle_task_deleted)
                 task_widget.request_edit.connect(self.handle_task_edited)
                 # Insert new tasks before the "Add Task" button and stretch
@@ -147,6 +158,11 @@ class DayView(QWidget):
 
     def handle_task_completed(self, task_id: str, completed: bool):
         self.task_manager.set_completed(task_id, completed)
+        self.refresh_tasks()
+
+    def handle_task_important(self, task_id: str, is_important: bool):
+        new_category = "Important" if is_important else "None"
+        self.task_manager.set_category(task_id, category=new_category)
         self.refresh_tasks()
 
     def handle_task_deleted(self, task_id: str):

@@ -11,7 +11,7 @@ Categories = ["None",
               "School", 
               "Home",
               "Family",
-              "Errants",
+              "Errands",
               "Calls",
               "Urgent",
               "Learning",
@@ -27,5 +27,22 @@ MENU_ICONS = {
     "Calendar": "src/task_planner/icons/calendar/calendar.svg",
     "Groups": "",
     "Settings": "src/task_planner/icons/settings/icons8-settings.svg",
-    "User": "src/task_planner/icons/user/user.svg",
+        "User": "src/task_planner/icons/user/user.svg",
+    }
+    
+USER_WINDOW_ICONS = {
+        "Login": "src/task_planner/icons/user/log-in.svg",
+        "Sign Up": "",
+        "Logout": "src/task_planner/icons/user/log-out.svg",
+    }
+
+CHECK_MARK_ICONS = {
+    "Checked": "src/task_planner/icons/check_box/icons8-check-mark-checked.svg",
+    "Unchecked": "src/task_planner/icons/check_box/icons8-check-mark-unchecked.svg",
 }
+
+IMPORTANT_ICONS = {
+    "Filled": "src/task_planner/icons/star/filled-star.svg",
+    "Outline": "src/task_planner/icons/star/star.svg",
+}
+    
