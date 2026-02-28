@@ -1,5 +1,6 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QDialog
+from PyQt5.QtGui import QPalette, QColor
 from task_planner.ui.main_window import MainWindow
 
 from task_planner.ui.signup_dialog import SignupDialog
@@ -13,6 +14,19 @@ def run_app():
 
     app = QApplication(sys.argv)
     app.setApplicationName("Task Planner")
+
+    try:
+        with open("src/task_planner/ui/styles/light.qss", "r") as f:
+            app.setStyleSheet(f.read())
+        
+        palette = app.palette()
+        palette.setColor(QPalette.Window, QColor("#FFFFFF"))
+        palette.setColor(QPalette.WindowText, QColor("#333333"))
+        palette.setColor(QPalette.Base, QColor("#FFFFFF"))
+        palette.setColor(QPalette.Button, QColor("#FFFFFF"))
+        app.setPalette(palette)
+    except FileNotFoundError:
+        print("Warning: light.qss not found")
 
     auth_manager = AuthManager()
 

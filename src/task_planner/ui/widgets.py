@@ -24,18 +24,6 @@ class AddTaskWidget(QWidget):
         layout.addWidget(self.title_label)
         layout.addStretch()
 
-        self.setStyleSheet(
-            """
-            AddTaskWidget {
-                background-color: #f0f0f0;
-                border: 1px dashed #aaa;
-                border-radius: 5px;
-            }
-            AddTaskWidget:hover {
-                background-color: #e0e0e0;
-            }
-        """
-        )
         self.setCursor(Qt.PointingHandCursor)
 
     def mousePressEvent(self, event: QMouseEvent):
@@ -52,21 +40,6 @@ class MenuButton(QPushButton):
         if icon_path:
             self.setIcon(QIcon(icon_path))
             self.setIconSize(QSize(16, 16))
-
-        self.setStyleSheet(
-            """
-            QPushButton {
-                text-align: left;
-                padding: 8px;
-                border: none;
-                font-size: 14px;
-                border-radius: 4px;
-            }
-            QPushButton:hover {
-                background-color: #444;
-            }
-        """
-        )
 
 
 class CheckMarkWidget(QPushButton):

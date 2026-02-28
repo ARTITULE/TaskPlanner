@@ -29,61 +29,6 @@ class SignupDialog(QDialog):
         self.setWindowTitle("Sign Up")
         self.setModal(True)
         self.setMinimumWidth(400)
-        self.setStyleSheet(
-            """
-            QDialog {
-                background-color: #2B2B2B;
-            }
-            QLabel {
-                color: #BBBBBB;
-                font-size: 13px;
-                font-family: "sans-serif";
-            }
-            QLabel#signup_title_label {
-                color: #FFFFFF;
-                font-size: 24px;
-                font-weight: bold;
-                margin-bottom: 10px;
-            }
-            QLineEdit {
-                background-color: #3C3C3C;
-                border: 1px solid #5A5A5A;
-                border-radius: 5px;
-                padding: 10px;
-                color: #FFFFFF;
-                font-family: "sans-serif";
-            }
-            QLineEdit:focus {
-                border: 1px solid #4A90E2;
-            }
-            QPushButton {
-                padding: 10px;
-                border-radius: 5px;
-                font-weight: bold;
-                font-family: "sans-serif";
-            }
-            QPushButton#signup_button {
-                background-color: #4A90E2;
-                color: white;
-                border: none;
-                margin-top: 10px;
-            }
-            QPushButton#signup_button:hover {
-                background-color: #357ABD;
-            }
-            QPushButton#login_button {
-                background-color: transparent;
-                color: #4A90E2;
-                border: none;
-                text-align: left;
-                padding: 0;
-            }
-            QPushButton#login_button:hover {
-                color: #357ABD;
-                text-decoration: underline;
-            }
-            """
-        )
 
         self.signup_title_label = QLabel("Sign Up")
         self.signup_title_label.setObjectName("signup_title_label")
@@ -118,7 +63,7 @@ class SignupDialog(QDialog):
         self.login_container = QHBoxLayout()
         self.login_label = QLabel("Already have an account?")
         self.login_button = QPushButton("Login")
-        self.login_button.setObjectName("login_button")
+        self.login_button.setObjectName("login_link_button")
         self.login_button.setCursor(Qt.PointingHandCursor)
         self.login_container.addWidget(self.login_label)
         self.login_container.addWidget(self.login_button)

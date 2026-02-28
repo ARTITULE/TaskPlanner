@@ -21,26 +21,13 @@ class UserWindow(QWidget):
 
         self.setWindowTitle("User")
         self.setFixedSize(350, 250)
-        self.setStyleSheet(
-            """
-            QWidget {
-                background-color: #2B2B2B;
-            }
-            QLabel {
-                color: #FFFFFF;
-                font-size: 18px;
-                font-weight: bold;
-                margin-bottom: 20px;
-                font-family: "sans-serif";
-            }
-            """
-        )
 
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(30, 30, 30, 30)
         self.layout.setSpacing(10)
 
         self.status_label = QLabel()
+        self.status_label.setObjectName("user_status_label")
         self.layout.addWidget(self.status_label)
 
         self.login_btn = MenuButton("Login", USER_WINDOW_ICONS.get("Login"))

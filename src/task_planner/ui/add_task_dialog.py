@@ -34,59 +34,6 @@ class AddTaskDialog(QDialog):
 
 
     def init_ui(self):
-        self.setStyleSheet(
-            """
-            QDialog {
-                background-color: #2B2B2B;
-            }
-            QLabel {
-                color: #BBBBBB;
-                font-size: 13px;
-                font-family: "sans-serif";
-            }
-            QLabel#dialog_label {
-                color: #FFFFFF;
-                font-size: 20px;
-                font-weight: bold;
-                margin-bottom: 10px;
-            }
-            QLineEdit, QDateEdit, QComboBox {
-                background-color: #3C3C3C;
-                border: 1px solid #5A5A5A;
-                border-radius: 5px;
-                padding: 8px;
-                color: #FFFFFF;
-                font-family: "sans-serif";
-            }
-            QLineEdit:focus, QDateEdit:focus, QComboBox:focus {
-                border: 1px solid #4A90E2;
-            }
-            QPushButton {
-                padding: 8px 20px;
-                border-radius: 5px;
-                font-weight: bold;
-                font-family: "sans-serif";
-            }
-            QPushButton#save_btn {
-                background-color: #4A90E2;
-                color: white;
-                border: none;
-            }
-            QPushButton#save_btn:hover {
-                background-color: #357ABD;
-            }
-            QPushButton#cancel_btn {
-                background-color: transparent;
-                color: #BBBBBB;
-                border: 1px solid #5A5A5A;
-            }
-            QPushButton#cancel_btn:hover {
-                background-color: #3C3C3C;
-                color: white;
-            }
-            """
-        )
-
         layout = QVBoxLayout()
         layout.setContentsMargins(30, 30, 30, 30)
         layout.setSpacing(15)

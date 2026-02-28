@@ -1,0 +1,198 @@
+QWidget {
+    background-color: #2B2B2B;
+    color: #FFFFFF;
+    font-family: "sans-serif";
+}
+
+QMainWindow, QStackedWidget, QWidget#task_list_content {
+    background-color: #2B2B2B;
+}
+
+QSplitter::handle {
+    background-color: #3C3C3C;
+    width: 1px;
+}
+
+QScrollArea {
+    border: none;
+    background-color: transparent;
+}
+
+QScrollArea > QWidget > QWidget {
+    background-color: transparent;
+}
+
+QScrollBar:vertical {
+    border: none;
+    background: #2B2B2B;
+    width: 10px;
+    margin: 0px;
+}
+
+QScrollBar::handle:vertical {
+    background: #444444;
+    min-height: 20px;
+    border-radius: 5px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: #555555;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0px;
+}
+
+QLabel {
+    color: #BBBBBB;
+    font-size: 13px;
+}
+
+QLabel#dialog_label, QLabel#login_label, QLabel#signup_title_label {
+    color: #FFFFFF;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+QLabel#date_label {
+    background-color: transparent;
+    color: white;
+    padding: 40px;
+    font-size: 50px;
+    font-weight: bold;
+    border-bottom: 1px solid #3C3C3C;
+}
+
+QLabel#user_status_label {
+    color: #FFFFFF;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+QLineEdit, QDateEdit, QComboBox {
+    background-color: #3C3C3C;
+    border: 1px solid #5A5A5A;
+    border-radius: 5px;
+    padding: 10px;
+    color: #FFFFFF;
+}
+
+QLineEdit:focus, QDateEdit:focus, QComboBox:focus {
+    border: 1px solid #4A90E2;
+}
+
+QPushButton {
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    outline: none;
+}
+
+QPushButton:hover {
+    background-color: #444;
+}
+
+QPushButton#save_btn, QPushButton#login_button, QPushButton#signup_button {
+    background-color: #4A90E2;
+    color: white;
+    border: none;
+}
+
+QPushButton#save_btn:hover, QPushButton#login_button:hover, QPushButton#signup_button:hover {
+    background-color: #357ABD;
+}
+
+QPushButton#cancel_btn {
+    background-color: transparent;
+    color: #BBBBBB;
+    border: 1px solid #5A5A5A;
+}
+
+QPushButton#cancel_btn:hover {
+    background-color: #3C3C3C;
+    color: white;
+}
+
+QPushButton#signup_link_button, QPushButton#login_link_button {
+    background-color: transparent;
+    color: #4A90E2;
+    border: none;
+    text-align: left;
+    padding: 0;
+    font-weight: normal;
+}
+
+QPushButton#signup_link_button:hover, QPushButton#login_link_button:hover {
+    color: #357ABD;
+    text-decoration: underline;
+}
+
+TaskWidget {
+    background-color: transparent;
+}
+
+TaskWidget QLabel {
+    background-color: transparent;
+}
+
+AddTaskWidget {
+    background-color: transparent;
+    border: 1px dashed #5A5A5A;
+    border-radius: 5px;
+}
+
+AddTaskWidget:hover {
+    background-color: #444;
+}
+
+MenuButton {
+    text-align: left;
+    padding: 10px 15px;
+    border: none;
+    font-size: 14px;
+    border-radius: 6px;
+    background-color: transparent;
+    color: #DDDDDD;
+}
+
+MenuButton:hover {
+    background-color: #3C3C3C;
+    color: #FFFFFF;
+}
+
+CheckMarkWidget {
+    background-color: transparent;
+    border: none;
+}
+
+QStatusBar {
+    background-color: #2B2B2B;
+    color: #888888;
+    border-top: 1px solid #3C3C3C;
+}
+
+QCalendarWidget QAbstractItemView {
+    selection-background-color: #4A90E2;
+    selection-color: white;
+    alternate-background-color: #3C3C3C;
+    gridline-color: #555555;
+}
+
+QCalendarWidget QWidget#qt_calendar_navigationbar {
+    background-color: #3C3C3C;
+}
+
+QCalendarWidget QToolButton {
+    color: #FFFFFF;
+    background-color: transparent;
+    border: none;
+}
+
+QCalendarWidget QToolButton:hover {
+    background-color: #444444;
+}
+
+QCalendarWidget QTableView {
+    border: 1px solid #3C3C3C;
+}

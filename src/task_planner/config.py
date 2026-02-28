@@ -5,7 +5,7 @@ Base_URL = "https://introspectional-scalelike-ria.ngrok-free.dev"
 DATA_PATH = Path("src/task_planner/data/tasks.json")
 
 Categories = ["None",
-              "Important" 
+              "Important", 
               "Work",
               "Personal", 
               "School", 
@@ -49,5 +49,10 @@ IMPORTANT_ICONS = {
 PASSWORD_ICONS = {
     "Visible": "src/task_planner/icons/user/eye.svg",
     "Hidden": "src/task_planner/icons/user/eye-off.svg",
+}
+
+CALENDAR_ICONS = {
+    "Previous": "src/task_planner/icons/arrow/arrow-left-circle.svg",
+    "Next": "src/task_planner/icons/arrow/arrow-right-circle.svg",
 }
     

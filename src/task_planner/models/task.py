@@ -157,7 +157,6 @@ class TaskWidget(QWidget):
         
         info_parts = []
         if self.task.exp_time:
-            # Assuming exp_time is a date object
             info_parts.append(self.task.exp_time.strftime("%d/%m"))
         
         if self.task.category and self.task.category != "None":

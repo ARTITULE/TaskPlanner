@@ -32,30 +32,20 @@ class DayView(QWidget):
         main_layout.setSpacing(0)
 
         self.date_label = QLabel(f"My Day, {self.current_date.strftime('%B %d')}")
+        self.date_label.setObjectName("date_label")
         self.date_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
         
         date_font = QFont()
         date_font.setFamily("sans-serif")
         date_font.setPointSize(50)
         self.date_label.setFont(date_font)
-        self.date_label.setStyleSheet(
-            """
-            QLabel {
-                background-color: #3C3C3C;
-                color: white;
-                padding: 40px;
-                border-left: 1px solid #5A5A5A;
-                border-right: 1px solid #5A5A5A;
-                border-bottom: 1px solid #5A5A5A;
-            }
-            """
-        )
 
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidgetResizable(True)
         self.scroll_area.setFrameShape(QFrame.NoFrame)
 
         self.task_list_widget = QWidget()
+        self.task_list_widget.setObjectName("task_list_content")
         self.task_list_layout = QVBoxLayout(self.task_list_widget)
         self.task_list_layout.setContentsMargins(10, 5, 10, 5)
         self.task_list_layout.setSpacing(5)
@@ -79,7 +69,7 @@ class DayView(QWidget):
         self.current_date = new_date
         if new_date == date.today():
             self.date_label.setText(
-                f"My Day<br><span style='font-size: 30pt;'>{self.current_date.strftime('%B %d')}</span>"
+                f"My Day<br><span style='font-size: 20pt; font-weight: normal; color: #888888;'>{self.current_date.strftime('%B %d')}</span>"
             )
         else:
             self.date_label.setText(self.current_date.strftime('%B %d'))
@@ -104,7 +94,6 @@ class DayView(QWidget):
         self.refresh_tasks()
 
     def refresh_tasks(self):
-        # Clear existing task widgets and separators, but not the add task button or stretch
         for i in reversed(range(self.task_list_layout.count())):
             item = self.task_list_layout.itemAt(i)
             widget = item.widget()
@@ -121,7 +110,7 @@ class DayView(QWidget):
                 if task.exp_time == self.current_date:
                     show_task = True
             elif self.view_mode == "all_tasks":
-                if not task.completed:
+                if not task.completed and not task.exp_time:
                     show_task = True
             elif self.view_mode == "completed":
                 if task.completed:
@@ -141,16 +130,13 @@ class DayView(QWidget):
                 task_widget.important_changed.connect(self.handle_task_important)
                 task_widget.request_delete.connect(self.handle_task_deleted)
                 task_widget.request_edit.connect(self.handle_task_edited)
-                # Insert new tasks before the "Add Task" button and stretch
                 self.task_list_layout.insertWidget(
                     self.task_list_layout.count() - 2, task_widget
                 )
                 
-                # Add separator after each task
                 separator = QFrame()
                 separator.setFrameShape(QFrame.HLine)
                 separator.setFrameShadow(QFrame.Sunken)
-                separator.setStyleSheet("color: #eee;")  # Subtle color
                 separator.is_separator = True
                 self.task_list_layout.insertWidget(
                     self.task_list_layout.count() - 2, separator

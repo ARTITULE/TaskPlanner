@@ -35,7 +35,7 @@ class MainWindow(QMainWindow):
         self.task_manager = TaskManager(auth_manager=auth_manager)
 
         self.setWindowTitle("Task Planner")
-        self.resize(1000, 600)
+        self.resize(1300, 700)
 
         self.init_ui()
          
@@ -84,7 +84,7 @@ class MainWindow(QMainWindow):
             open_edit_dialog=self.open_edit_task_dialog,
         )
 
-        self.calendar_view = CalendarView()
+        self.calendar_view = CalendarView(task_manager=self.task_manager)
         self.user_page = UserWindow(auth_manager=self.auth_manager)
 
         self.content_stack.addWidget(self.day_view)
@@ -131,7 +131,6 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(splitter)
 
     def show_about_dialog(self):
-        # Placeholder for the about dialog
         pass
 
     def open_add_task_dialog(self):
@@ -198,15 +197,6 @@ class MainWindow(QMainWindow):
     def on_date_selected(self, selected_date):
         self.day_view.set_date(selected_date)
         self.content_stack.setCurrentWidget(self.day_view)
-
-
-
-
-
-
-#    def on_user_logged_in(self, user):
-#        self.statusBar().showMessage(f"Logged in as {user.username}")
-
 
     def update_status_bar(self):
         user = self.auth_manager.get_current_user()
