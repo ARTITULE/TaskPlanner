@@ -4,8 +4,42 @@ QWidget {
     font-family: "sans-serif";
 }
 
-QMainWindow, QStackedWidget, QWidget#task_list_content {
+QMainWindow {
     background-color: #2B2B2B;
+}
+
+QStackedWidget, QWidget#task_list_content {
+    background-color: #2B2B2B;
+}
+
+QMenuBar {
+    background-color: #2B2B2B;
+    border-bottom: 1px solid #3C3C3C;
+}
+
+QMenuBar::item {
+    background-color: transparent;
+    padding: 5px 10px;
+    color: #FFFFFF;
+}
+
+QMenuBar::item:selected {
+    background-color: #3C3C3C;
+}
+
+QMenu {
+    background-color: #2B2B2B;
+    border: 1px solid #3C3C3C;
+}
+
+QMenu::item {
+    padding: 5px 25px 5px 20px;
+    color: #FFFFFF;
+}
+
+QMenu::item:selected {
+    background-color: #4A90E2;
+    color: #FFFFFF;
 }
 
 QSplitter::handle {
@@ -60,6 +94,8 @@ QLabel#date_label {
     padding: 40px;
     font-size: 50px;
     font-weight: bold;
+    border-left: 1px solid #3C3C3C;
+    border-right: 1px solid #3C3C3C;
     border-bottom: 1px solid #3C3C3C;
 }
 
@@ -90,7 +126,7 @@ QPushButton {
 }
 
 QPushButton:hover {
-    background-color: #444;
+    background-color: #444444;
 }
 
 QPushButton#save_btn, QPushButton#login_button, QPushButton#signup_button {
@@ -143,7 +179,7 @@ AddTaskWidget {
 }
 
 AddTaskWidget:hover {
-    background-color: #444;
+    background-color: #444444;
 }
 
 MenuButton {
@@ -159,6 +195,11 @@ MenuButton {
 MenuButton:hover {
     background-color: #3C3C3C;
     color: #FFFFFF;
+}
+
+ThemeSelectionButton:checked {
+    background-color: #1A3A5A;
+    color: #4A90E2;
 }
 
 CheckMarkWidget {

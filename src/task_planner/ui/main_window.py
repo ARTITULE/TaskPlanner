@@ -17,6 +17,7 @@ from task_planner.ui.user_window import UserWindow
 from datetime import date
 from task_planner.ui.day_view import DayView
 from task_planner.ui.calendar_view import CalendarView
+from task_planner.ui.settings_view import SettingsView
 from task_planner.ui.widgets import MenuButton
 from task_planner.config import MENU_ICONS
 
@@ -33,6 +34,7 @@ class MainWindow(QMainWindow):
 
         self.auth_manager = auth_manager
         self.task_manager = TaskManager(auth_manager=auth_manager)
+        self.current_icon_color = "#000000"
 
         self.setWindowTitle("Task Planner")
         self.resize(1300, 700)
@@ -86,10 +88,12 @@ class MainWindow(QMainWindow):
 
         self.calendar_view = CalendarView(task_manager=self.task_manager)
         self.user_page = UserWindow(auth_manager=self.auth_manager)
+        self.settings_page = SettingsView()
 
         self.content_stack.addWidget(self.day_view)
         self.content_stack.addWidget(self.calendar_view)
         self.content_stack.addWidget(self.user_page)
+        self.content_stack.addWidget(self.settings_page)
 
 
         self.today_btn.clicked.connect(self.show_today)
@@ -99,6 +103,8 @@ class MainWindow(QMainWindow):
         self.calendar_btn.clicked.connect(self.show_calendar)
         self.calendar_view.date_selected.connect(self.on_date_selected)
         self.user_btn.clicked.connect(self.show_user_page)
+        self.settings_btn.clicked.connect(self.show_settings)
+        self.settings_page.theme_changed.connect(self.handle_theme_change)
         
         sidebar_layout = QVBoxLayout()
         sidebar_layout.addWidget(QLabel("Navigation"))
@@ -193,6 +199,45 @@ class MainWindow(QMainWindow):
 
     def show_user_page(self):
         self.content_stack.setCurrentWidget(self.user_page)
+
+    def show_settings(self):
+        self.content_stack.setCurrentWidget(self.settings_page)
+
+    def handle_theme_change(self, theme_name: str):
+        if theme_name == "device":
+            return
+            
+        file_path = f"src/task_planner/ui/styles/{theme_name}.qss"
+        try:
+            with open(file_path, "r") as f:
+                qApp.setStyleSheet(f.read())
+            
+            from PyQt5.QtGui import QPalette, QColor
+            palette = qApp.palette()
+            self.current_icon_color = "#FFFFFF" if theme_name == "dark" else "#000000"
+            
+            if theme_name == "light":
+                palette.setColor(QPalette.Window, QColor("#FFFFFF"))
+                palette.setColor(QPalette.WindowText, QColor("#333333"))
+                palette.setColor(QPalette.Base, QColor("#FFFFFF"))
+                palette.setColor(QPalette.Button, QColor("#FFFFFF"))
+            else:
+                palette = QPalette()
+            qApp.setPalette(palette)
+
+            # Update all currently visible themed icons
+            from task_planner.ui.widgets import MenuButton, CheckMarkWidget
+            for btn in self.findChildren(MenuButton):
+                btn.update_icon_color(self.current_icon_color)
+            for widget in self.findChildren(CheckMarkWidget):
+                widget.update_icon_color(self.current_icon_color)
+            
+            # Refresh views to ensure any new or hidden icons are also updated
+            self.day_view.refresh_tasks()
+            self.user_page.refresh_ui()
+                
+        except FileNotFoundError:
+            print(f"Warning: {theme_name}.qss not found")
 
     def on_date_selected(self, selected_date):
         self.day_view.set_date(selected_date)

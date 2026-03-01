@@ -110,6 +110,10 @@ class TaskWidget(QWidget):
         self.refresh()
         self.important_changed.emit(self.task_id, is_important)
 
+    def update_icon_color(self, color_hex):
+        self.checkbox.update_icon_color(color_hex)
+        self.important_star.update_icon_color(color_hex)
+
     def update_style(self):
         
         if self.task.completed:

@@ -197,6 +197,11 @@ MenuButton:hover {
     color: #222222;
 }
 
+ThemeSelectionButton:checked {
+    background-color: #E1F0FF;
+    color: #4A90E2;
+}
+
 CheckMarkWidget {
     background-color: transparent;
     border: none;

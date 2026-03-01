@@ -32,7 +32,7 @@ MENU_ICONS = {
     
 USER_WINDOW_ICONS = {
         "Login": "src/task_planner/icons/user/log-in.svg",
-        "Sign Up": "",
+        "Sign Up": "src/task_planner/icons/user/user-plus.svg",
         "Logout": "src/task_planner/icons/user/log-out.svg",
     }
 
@@ -54,5 +54,16 @@ PASSWORD_ICONS = {
 CALENDAR_ICONS = {
     "Previous": "src/task_planner/icons/arrow/arrow-left-circle.svg",
     "Next": "src/task_planner/icons/arrow/arrow-right-circle.svg",
+}
+
+THEME_ICONS = {
+    "Light": "src/task_planner/icons/settings/theme/sun.svg",
+    "Dark": "src/task_planner/icons/settings/theme/moon.svg",
+    "Device": "src/task_planner/icons/settings/theme/smartphone.svg",
+}
+
+ANIMATIONS = {
+    "Check": "src/task_planner/icons/check_box/icons8-check-mark.gif",
+    "Star": "src/task_planner/icons/star/icons8-star-gif.gif",
 }
     
