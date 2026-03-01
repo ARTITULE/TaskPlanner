@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import (
     QAction,
     qApp,
 )
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal, QSettings
 from task_planner.ui.add_task_dialog import AddTaskDialog
 from task_planner.models.task import Task
 from task_planner.controllers.task_manager import TaskManager
@@ -19,6 +19,7 @@ from task_planner.ui.day_view import DayView
 from task_planner.ui.calendar_view import CalendarView
 from task_planner.ui.settings_view import SettingsView
 from task_planner.ui.widgets import MenuButton
+from task_planner.services.utils import get_system_theme
 from task_planner.config import MENU_ICONS
 
 
@@ -204,40 +205,39 @@ class MainWindow(QMainWindow):
         self.content_stack.setCurrentWidget(self.settings_page)
 
     def handle_theme_change(self, theme_name: str):
+        settings = QSettings("TaskPlanner", "ThemeSettings")
+        settings.setValue("theme", theme_name)
+
+        resolved_theme = theme_name
         if theme_name == "device":
-            return
+            resolved_theme = get_system_theme()
             
-        file_path = f"src/task_planner/ui/styles/{theme_name}.qss"
+        file_path = f"src/task_planner/ui/styles/{resolved_theme}.qss"
         try:
             with open(file_path, "r") as f:
-                qApp.setStyleSheet(f.read())
+                stylesheet_content = f.read()
+                qApp.setStyleSheet(stylesheet_content)
             
             from PyQt5.QtGui import QPalette, QColor
             palette = qApp.palette()
-            self.current_icon_color = "#FFFFFF" if theme_name == "dark" else "#000000"
+            self.current_icon_color = "#FFFFFF" if resolved_theme == "dark" else "#000000"
             
-            if theme_name == "light":
-                palette.setColor(QPalette.Window, QColor("#FFFFFF"))
-                palette.setColor(QPalette.WindowText, QColor("#333333"))
-                palette.setColor(QPalette.Base, QColor("#FFFFFF"))
-                palette.setColor(QPalette.Button, QColor("#FFFFFF"))
-            else:
-                palette = QPalette()
             qApp.setPalette(palette)
 
-            # Update all currently visible themed icons
+            qApp.style().unpolish(qApp)
+            qApp.style().polish(qApp)
+
             from task_planner.ui.widgets import MenuButton, CheckMarkWidget
             for btn in self.findChildren(MenuButton):
                 btn.update_icon_color(self.current_icon_color)
             for widget in self.findChildren(CheckMarkWidget):
                 widget.update_icon_color(self.current_icon_color)
             
-            # Refresh views to ensure any new or hidden icons are also updated
             self.day_view.refresh_tasks()
             self.user_page.refresh_ui()
                 
         except FileNotFoundError:
-            print(f"Warning: {theme_name}.qss not found")
+            print(f"Warning: {resolved_theme}.qss not found")
 
     def on_date_selected(self, selected_date):
         self.day_view.set_date(selected_date)

@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QButtonGroup
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal, QSettings
 from task_planner.ui.widgets import MenuButton, ThemeSelectionButton
 from task_planner.config import THEME_ICONS
 
@@ -24,7 +24,6 @@ class SettingsView(QWidget):
         
         layout.addWidget(self.title_label)
 
-        # Theme Section
         self.theme_label = QLabel("Theme")
         self.theme_label.setStyleSheet("font-size: 18px; font-weight: bold; margin-top: 10px;")
         layout.addWidget(self.theme_label)
@@ -38,18 +37,23 @@ class SettingsView(QWidget):
         self.dark_btn = ThemeSelectionButton("Dark", THEME_ICONS.get("Dark"))
         self.device_btn = ThemeSelectionButton("Device", THEME_ICONS.get("Device"))
         
-        # Set minimum width for a larger feel
         self.light_btn.setMinimumWidth(100)
         self.dark_btn.setMinimumWidth(100)
         self.device_btn.setMinimumWidth(100)
         
-        # Make them exclusive (like radio buttons)
         self.theme_group.addButton(self.light_btn)
         self.theme_group.addButton(self.dark_btn)
         self.theme_group.addButton(self.device_btn)
         
-        # Set 'Device' as default for now
-        self.device_btn.setChecked(True)
+        settings = QSettings("TaskPlanner", "ThemeSettings")
+        theme_preference = settings.value("theme", "device")
+        
+        if theme_preference == "light":
+            self.light_btn.setChecked(True)
+        elif theme_preference == "dark":
+            self.dark_btn.setChecked(True)
+        else:
+            self.device_btn.setChecked(True)
 
         theme_layout.addWidget(self.light_btn)
         theme_layout.addWidget(self.dark_btn)
@@ -58,7 +62,6 @@ class SettingsView(QWidget):
         
         layout.addLayout(theme_layout)
 
-        # Connections
         self.light_btn.clicked.connect(lambda: self.theme_changed.emit("light"))
         self.dark_btn.clicked.connect(lambda: self.theme_changed.emit("dark"))
         self.device_btn.clicked.connect(lambda: self.theme_changed.emit("device"))

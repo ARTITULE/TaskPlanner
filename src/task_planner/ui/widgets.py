@@ -85,7 +85,7 @@ class CheckMarkWidget(QPushButton):
         self.checked_icon_path = checked_icon_path
         self.unchecked_icon_path = unchecked_icon_path
         self.is_checked = checked
-        self.current_icon_color = None # Store current color
+        self.current_icon_color = None
         
         self.setFlat(True)
         self.setCursor(Qt.PointingHandCursor)
@@ -97,19 +97,19 @@ class CheckMarkWidget(QPushButton):
 
     def toggle_state(self):
         self.is_checked = not self.is_checked
-        self.update_icon(self.current_icon_color) # Reuse color on toggle
+        self.update_icon(self.current_icon_color)
         self.state_changed.emit(self.is_checked)
 
     def setChecked(self, checked):
         if self.is_checked != checked:
             self.is_checked = checked
-            self.update_icon(self.current_icon_color) # Reuse color
+            self.update_icon(self.current_icon_color)
 
     def isChecked(self):
         return self.is_checked
 
     def update_icon(self, color_hex=None):
-        self.current_icon_color = color_hex # Save the color
+        self.current_icon_color = color_hex
         path = self.checked_icon_path if self.is_checked else self.unchecked_icon_path
         if color_hex:
             self.setIcon(get_themed_icon(path, color_hex))

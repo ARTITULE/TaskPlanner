@@ -1,6 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QDialog
 from PyQt5.QtGui import QPalette, QColor
+from PyQt5.QtCore import QSettings
 from task_planner.ui.main_window import MainWindow
 
 from task_planner.ui.signup_dialog import SignupDialog
@@ -10,27 +11,31 @@ from task_planner.auth.auth_manager import AuthManager
 
 
 
+from task_planner.services.utils import get_system_theme
+
 def run_app():
 
     app = QApplication(sys.argv)
     app.setApplicationName("Task Planner")
 
+    settings = QSettings("TaskPlanner", "ThemeSettings")
+    theme_preference = settings.value("theme", "device")
+
+    actual_theme = get_system_theme() if theme_preference == "device" else theme_preference
+
     try:
-        with open("src/task_planner/ui/styles/light.qss", "r") as f:
+        with open(f"src/task_planner/ui/styles/{actual_theme}.qss", "r") as f:
             app.setStyleSheet(f.read())
         
-        palette = app.palette()
-        palette.setColor(QPalette.Window, QColor("#FFFFFF"))
-        palette.setColor(QPalette.WindowText, QColor("#333333"))
-        palette.setColor(QPalette.Base, QColor("#FFFFFF"))
-        palette.setColor(QPalette.Button, QColor("#FFFFFF"))
-        app.setPalette(palette)
+
+
     except FileNotFoundError:
-        print("Warning: light.qss not found")
+        print(f"Warning: {actual_theme}.qss not found")
 
     auth_manager = AuthManager()
 
     main_window = MainWindow(auth_manager=auth_manager)
+    main_window.handle_theme_change(theme_preference)
     main_window.show()
 
 
