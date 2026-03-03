@@ -9,6 +9,12 @@ class CustomCalendar(QCalendarWidget):
     def __init__(self, task_manager, parent=None):
         super().__init__(parent)
         self.task_manager = task_manager
+
+        font = self.font()
+        font.setPointSize(18)
+        font.setBold(True)
+        self.setFont(font)
+
         for child in self.findChildren(QWidget):
             child.installEventFilter(self)
 
