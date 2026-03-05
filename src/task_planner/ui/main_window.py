@@ -106,6 +106,7 @@ class MainWindow(QMainWindow):
         self.user_btn.clicked.connect(self.show_user_page)
         self.settings_btn.clicked.connect(self.show_settings)
         self.settings_page.theme_changed.connect(self.handle_theme_change)
+        self.settings_page.calendar_settings_changed.connect(self.calendar_view.apply_settings)
         
         sidebar_layout = QVBoxLayout()
         sidebar_layout.addWidget(QLabel("Navigation"))

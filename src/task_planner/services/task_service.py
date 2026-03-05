@@ -36,10 +36,6 @@ class TaskService:
             print("3")
             return None
         
-        
-        #data = response.json()
-        #print(data)
-
         print("sent task create")
 
         if response.status_code != 200:

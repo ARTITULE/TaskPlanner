@@ -36,6 +36,21 @@ def run_app():
 
     main_window = MainWindow(auth_manager=auth_manager)
     main_window.handle_theme_change(theme_preference)
+
+    app_settings = QSettings("TaskPlanner", "AppSettings")
+    startup_page = app_settings.value("startup_page", "My Day")
+    
+    if startup_page == "Important":
+        main_window.show_important()
+    elif startup_page == "Tasks":
+        main_window.show_tasks()
+    elif startup_page == "Completed":
+        main_window.show_completed()
+    elif startup_page == "Calendar":
+        main_window.show_calendar()
+    else:
+        main_window.show_today()
+
     main_window.show()
 
 

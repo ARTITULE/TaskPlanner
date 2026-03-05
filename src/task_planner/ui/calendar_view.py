@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QCalendarWidget
-from PyQt5.QtCore import pyqtSignal, Qt, QDate, QEvent, QRect
+from PyQt5.QtCore import pyqtSignal, Qt, QDate, QEvent, QRect, QSettings
 from PyQt5.QtGui import QColor, QFont, QPainter, QBrush, QPen
 from task_planner.ui.widgets import MenuButton
 from task_planner.config import CALENDAR_ICONS
@@ -9,6 +9,8 @@ class CustomCalendar(QCalendarWidget):
     def __init__(self, task_manager, parent=None):
         super().__init__(parent)
         self.task_manager = task_manager
+        self.show_completed = True
+        self.show_small = False
 
         font = self.font()
         font.setPointSize(18)
@@ -66,10 +68,15 @@ class CustomCalendar(QCalendarWidget):
         v_spacing = 2
 
         def draw_badge(count, bg_color, text_color, y, label_suffix="", total_count=None):
-            if total_count is not None:
-                text = f"{count} / {total_count} tasks{label_suffix}"
+            count_str = f"{count} / {total_count}" if total_count is not None else str(count)
+            
+            if self.show_small:
+                label_str = ""
             else:
-                text = f"{count} task{label_suffix}" if count == 1 else f"{count} tasks{label_suffix}"
+                check_val = total_count if total_count is not None else count
+                label_str = " task" if check_val == 1 else " tasks"
+                
+            text = f"{count_str}{label_str}{label_suffix}"
             
             text_rect = painter.fontMetrics().boundingRect(text)
             badge_width = text_rect.width() + 8
@@ -83,7 +90,7 @@ class CustomCalendar(QCalendarWidget):
             painter.drawText(bg_rect, Qt.AlignCenter, text)
             return 14 + v_spacing
 
-        if completed > 0:
+        if self.show_completed and completed > 0:
             draw_badge(completed, QColor("#28A745"), Qt.white, current_y, " done", total_count=total_pending)
             current_y -= (14 + v_spacing)
 
@@ -141,6 +148,7 @@ class CalendarView(QWidget):
         self.calendar.setGridVisible(True)
         self.calendar.setVerticalHeaderFormat(QCalendarWidget.NoVerticalHeader)
         self.calendar.setNavigationBarVisible(False)
+        self.apply_settings()
 
         layout.addLayout(header_layout)
         layout.addWidget(self.calendar)
@@ -158,3 +166,18 @@ class CalendarView(QWidget):
     def update_header_label(self, year, month):
         display_date = QDate(year, month, 1)
         self.month_label.setText(display_date.toString("MMMM yyyy"))
+
+    def apply_settings(self):
+        settings = QSettings("TaskPlanner", "CalendarSettings")
+        is_sunday = settings.value("sunday_first", False, type=bool)
+        is_show = settings.value("show_completed_in_calendar", True, type=bool)
+        is_small = settings.value("small_indicator", False, type=bool)
+        
+        if is_sunday:
+            self.calendar.setFirstDayOfWeek(Qt.Sunday)
+        else:
+            self.calendar.setFirstDayOfWeek(Qt.Monday)
+
+        self.calendar.show_completed = is_show
+        self.calendar.show_small = is_small
+        self.calendar.update()

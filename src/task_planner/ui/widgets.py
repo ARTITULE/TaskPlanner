@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QSizePolicy, QPushButton
-from PyQt5.QtCore import Qt, pyqtSignal, QSize
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QSizePolicy, QPushButton, QCheckBox
+from PyQt5.QtCore import Qt, pyqtSignal, QSize, QPropertyAnimation, QEasingCurve, pyqtProperty, QRect, QPoint
 from PyQt5.QtGui import QFont, QMouseEvent, QIcon, QPixmap, QPainter, QColor
 
 
@@ -75,6 +75,7 @@ class ThemeSelectionButton(MenuButton):
     def __init__(self, text, icon_path, parent=None):
         super().__init__(text, icon_path, parent)
         self.setCheckable(True)
+        self.setStyleSheet("QPushButton { text-align: center; padding: 10px; }")
 
 
 class CheckMarkWidget(QPushButton):
@@ -118,3 +119,70 @@ class CheckMarkWidget(QPushButton):
 
     def update_icon_color(self, color_hex):
         self.update_icon(color_hex)
+
+
+class AnimatedToggle(QCheckBox):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setFixedSize(60, 28)
+        self.setCursor(Qt.PointingHandCursor)
+        self.setFocusPolicy(Qt.NoFocus)
+        self.setStyleSheet("QCheckBox::indicator { width: 0px; height: 0px; }")
+        self._handle_position = 3
+        self.animation = QPropertyAnimation(self, b"handle_position", self)
+        self.animation.setDuration(200)
+        self.animation.setEasingCurve(QEasingCurve.InOutCubic)
+        self.stateChanged.connect(self.setup_animation)
+
+    def mouseReleaseEvent(self, e):
+        self.setChecked(not self.isChecked())
+
+    @pyqtProperty(int)
+    def handle_position(self):
+        return self._handle_position
+
+    @handle_position.setter
+    def handle_position(self, pos):
+        self._handle_position = pos
+        self.update()
+
+    def setup_animation(self, state):
+        self.animation.stop()
+        if state:
+            self.animation.setEndValue(self.width() - 25)
+        else:
+            self.animation.setEndValue(3)
+        self.animation.start()
+
+    def paintEvent(self, e):
+        contRect = self.rect()
+        handleRect = QRect(self._handle_position, 3, 22, 22)
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setPen(Qt.NoPen)
+        if not self.isChecked():
+            painter.setBrush(QColor("#CCCCCC"))
+            painter.drawRoundedRect(0, 0, contRect.width(), contRect.height(), 14, 14)
+            painter.setBrush(QColor("#FFFFFF"))
+            painter.drawEllipse(handleRect)
+        else:
+            painter.setBrush(QColor("#4A90E2"))
+            painter.drawRoundedRect(0, 0, contRect.width(), contRect.height(), 14, 14)
+            painter.setBrush(QColor("#FFFFFF"))
+            painter.drawEllipse(handleRect)
+        painter.end()
+
+
+class LabeledToggle(QWidget):
+    def __init__(self, text, parent=None):
+        super().__init__(parent)
+        layout = QHBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(30)
+        
+        self.toggle = AnimatedToggle()
+        self.label = QLabel(text)
+        
+        layout.addWidget(self.toggle)
+        layout.addWidget(self.label)
+        layout.addStretch()

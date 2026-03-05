@@ -66,4 +66,10 @@ ANIMATIONS = {
     "Check": "src/task_planner/icons/check_box/icons8-check-mark.gif",
     "Star": "src/task_planner/icons/star/icons8-star-gif.gif",
 }
+
+WEEK_START_ICONS = {
+    "Device": "",
+    "Monday": "",
+    "Sunday": "",
+}
     
