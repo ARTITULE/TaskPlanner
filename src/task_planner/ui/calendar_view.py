@@ -11,6 +11,7 @@ class CustomCalendar(QCalendarWidget):
         self.task_manager = task_manager
         self.show_completed = True
         self.show_small = False
+        self.add_task_calendar = False
 
         font = self.font()
         font.setPointSize(18)
@@ -42,6 +43,10 @@ class CustomCalendar(QCalendarWidget):
         painter.setFont(date_font)
         painter.drawText(rect.adjusted(0, 5, -8, 0), Qt.AlignRight | Qt.AlignTop, str(date.day()))
 
+        if self.task_manager is None:
+            painter.restore()
+            return
+
         tasks = self.task_manager.tasks
         py_date = date.toPyDate()
         
@@ -60,27 +65,28 @@ class CustomCalendar(QCalendarWidget):
                 else:
                     reg_pending += 1
 
-        indicator_font = QFont("sans-serif", 11)
+        is_compact = self.show_small or self.add_task_calendar
+        indicator_size = 12 if is_compact else 14
+        indicator_font = QFont("sans-serif", 9 if is_compact else 11)
         painter.setFont(indicator_font)
         
-        current_y = rect.bottom() - 18
-        left_x = rect.left() + 5
         v_spacing = 2
-
-        def draw_badge(count, bg_color, text_color, y, label_suffix="", total_count=None):
-            count_str = f"{count} / {total_count}" if total_count is not None else str(count)
-            
-            if self.show_small:
-                label_str = ""
+        left_x = rect.left() + 5
+        
+        def draw_badge(count, bg_color, text_color, x, y, label_suffix="", total_count=None):
+            if total_count is not None and not is_compact:
+                unit = "task" if total_count == 1 else "tasks"
+                text = f"{count} / {total_count} {unit}{label_suffix}"
+            elif total_count is not None and is_compact:
+                text = f"{count} / {total_count}"
+            elif not is_compact:
+                text = f"{count} task{label_suffix}" if count == 1 else f"{count} tasks{label_suffix}"
             else:
-                check_val = total_count if total_count is not None else count
-                label_str = " task" if check_val == 1 else " tasks"
-                
-            text = f"{count_str}{label_str}{label_suffix}"
+                text = f"{count}"
             
             text_rect = painter.fontMetrics().boundingRect(text)
             badge_width = text_rect.width() + 8
-            bg_rect = QRect(left_x, y, badge_width, 14)
+            bg_rect = QRect(x, y, badge_width, indicator_size)
             
             painter.setPen(Qt.NoPen)
             painter.setBrush(QBrush(bg_color))
@@ -88,18 +94,37 @@ class CustomCalendar(QCalendarWidget):
             
             painter.setPen(QPen(text_color))
             painter.drawText(bg_rect, Qt.AlignCenter, text)
-            return 14 + v_spacing
+            return badge_width + 4
 
-        if self.show_completed and completed > 0:
-            draw_badge(completed, QColor("#28A745"), Qt.white, current_y, " done", total_count=total_pending)
-            current_y -= (14 + v_spacing)
-
-        if reg_pending > 0:
-            draw_badge(reg_pending, QColor("#5A5A5A"), Qt.white, current_y)
-            current_y -= (14 + v_spacing)
-
-        if imp_pending > 0:
-            draw_badge(imp_pending, QColor("#FF8C00"), Qt.white, current_y)
+        if self.add_task_calendar:
+            current_y = rect.bottom() - (indicator_size + v_spacing)
+            if self.show_completed and completed > 0:
+                draw_badge(completed, QColor("#28A745"), Qt.white, left_x, current_y, total_count=total_pending)
+                current_y -= (indicator_size + v_spacing)
+            if reg_pending > 0:
+                draw_badge(reg_pending, QColor("#5A5A5A"), Qt.white, left_x, current_y)
+                current_y -= (indicator_size + v_spacing)
+            if imp_pending > 0:
+                draw_badge(imp_pending, QColor("#FF8C00"), Qt.white, left_x, current_y)
+        elif self.show_small:
+            current_x = left_x
+            current_y = rect.bottom() - 18
+            if self.show_completed and completed > 0:
+                current_x += draw_badge(completed, QColor("#28A745"), Qt.white, current_x, current_y, total_count=total_pending)
+            if reg_pending > 0:
+                current_x += draw_badge(reg_pending, QColor("#5A5A5A"), Qt.white, current_x, current_y)
+            if imp_pending > 0:
+                current_x += draw_badge(imp_pending, QColor("#FF8C00"), Qt.white, current_x, current_y)
+        else:
+            current_y = rect.bottom() - 18
+            if self.show_completed and completed > 0:
+                draw_badge(completed, QColor("#28A745"), Qt.white, left_x, current_y, " done", total_count=total_pending)
+                current_y -= (14 + v_spacing)
+            if reg_pending > 0:
+                draw_badge(reg_pending, QColor("#5A5A5A"), Qt.white, left_x, current_y)
+                current_y -= (14 + v_spacing)
+            if imp_pending > 0:
+                draw_badge(imp_pending, QColor("#FF8C00"), Qt.white, left_x, current_y)
         
         painter.restore()
 

@@ -142,7 +142,7 @@ class MainWindow(QMainWindow):
         pass
 
     def open_add_task_dialog(self):
-        dialog = AddTaskDialog()
+        dialog = AddTaskDialog(parent=self)
         dialog.task_submitted.connect(self.handle_task_submitted)
         dialog.exec_()
 

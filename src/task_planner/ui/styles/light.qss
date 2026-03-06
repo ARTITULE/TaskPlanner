@@ -145,7 +145,21 @@ QPushButton#cancel_btn {
     border: 1px solid #DDDDDD;
 }
 
-QPushButton#cancel_btn:hover {
+QPushButton#add_date_btn {
+    background-color: transparent;
+    color: #666666;
+    border: 1px dashed #DDDDDD;
+    text-align: left;
+}
+
+QPushButton#clear_date_btn {
+    background-color: transparent;
+    color: #666666;
+    border: 1px solid #DDDDDD;
+    padding: 0;
+}
+
+QPushButton#cancel_btn:hover, QPushButton#add_date_btn:hover, QPushButton#clear_date_btn:hover {
     background-color: #F9F9F9;
     color: #333333;
 }

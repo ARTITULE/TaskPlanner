@@ -127,7 +127,6 @@ class DayView(QWidget):
             if show_task:
                 task_widget = TaskWidget(task=task)
                 
-                # Apply current theme color to task icons
                 main_win = self.window()
                 if hasattr(main_win, "current_icon_color"):
                     task_widget.update_icon_color(main_win.current_icon_color)

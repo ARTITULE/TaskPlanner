@@ -50,7 +50,6 @@ class SignupDialog(QDialog):
         self.password_input.setPlaceholderText("Create a password")
         self.password_input.setEchoMode(QLineEdit.Password)
         
-        # Add toggle visibility action
         self.toggle_password_action = self.password_input.addAction(
             QIcon(PASSWORD_ICONS.get("Hidden")), QLineEdit.TrailingPosition
         )
