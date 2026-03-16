@@ -29,8 +29,6 @@ class SettingsView(QWidget):
         self.general_label.setStyleSheet("font-size: 18px; font-weight: bold; margin-top: 10px;")
         layout.addWidget(self.general_label)
 
-        self.compact_toggle = LabeledToggle("Compact Mode")
-        layout.addWidget(self.compact_toggle)
 
         self.startup_label = QLabel("Startup Page")
         self.startup_label.setStyleSheet("font-size: 18px; font-weight: bold; margin-top: 10px;")
